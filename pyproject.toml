@@ -50,3 +50,13 @@ select = ["E", "F", "I", "UP", "B", "SIM"]
 python_version = "3.12"
 strict = true
 packages = ["civicproof"]
+
+[dependency-groups]
+dev = [
+    "accelerate>=1.14.0",
+    "scikit-learn>=1.9.0",
+    "sentence-transformers>=5.6.1",
+    "torch>=2.13.0",
+    "transformers>=4.57.6",
+    "xgboost>=3.3.0",
+]

@@ -1,0 +1,356 @@
+{
+  "dataset": "nyc311_gold_test.json",
+  "purpose": "Independent, multi-category manual gold-set review",
+  "seed": 3112026,
+  "record_count": 250,
+  "labels": {
+    "pothole": 50,
+    "fallen_tree": 50,
+    "flooding": 50,
+    "road_obstruction": 50,
+    "unknown": 50
+  },
+  "boundaries": {
+    "canonical_category": 100,
+    "explicit_flooding": 50,
+    "fallen_tree_vs_road_obstruction": 50,
+    "out_of_scope_unknown": 30,
+    "sewer_only": 20
+  },
+  "overlap_with_balanced_dataset": 0,
+  "review_status": "approved",
+  "reviewed_on": "2026-08-01",
+  "approved_for_evaluation": true,
+  "evaluation": {
+    "first_run_on": "2026-08-01",
+    "baseline_version": "rules-v2",
+    "metrics_file": "artifacts/evaluation/gold_baseline_metrics.json",
+    "frozen_after_evaluation": true
+  },
+  "pairs": [
+    {
+      "category": "fallen_tree",
+      "complaint_type": "Damaged Tree",
+      "descriptor": "Branch or Limb Has Fallen Down",
+      "count": 25
+    },
+    {
+      "category": "fallen_tree",
+      "complaint_type": "Damaged Tree",
+      "descriptor": "Entire Tree Has Fallen Down",
+      "count": 25
+    },
+    {
+      "category": "flooding",
+      "complaint_type": "DEP Street Condition",
+      "descriptor": "Ponding",
+      "count": 1
+    },
+    {
+      "category": "flooding",
+      "complaint_type": "Sewer",
+      "descriptor": "Catch Basin Clogged/Flooding (Use Comments) (SC)",
+      "count": 30
+    },
+    {
+      "category": "flooding",
+      "complaint_type": "Sewer",
+      "descriptor": "Highway Flooding (SH)",
+      "count": 5
+    },
+    {
+      "category": "flooding",
+      "complaint_type": "Sewer",
+      "descriptor": "Manhole Overflow (Use Comments) (SA1)",
+      "count": 6
+    },
+    {
+      "category": "flooding",
+      "complaint_type": "Sewer",
+      "descriptor": "Street Flooding (SJ)",
+      "count": 5
+    },
+    {
+      "category": "flooding",
+      "complaint_type": "Sewer Maintenance",
+      "descriptor": "Flooding on Street",
+      "count": 3
+    },
+    {
+      "category": "pothole",
+      "complaint_type": "Street Condition",
+      "descriptor": "Pothole",
+      "count": 50
+    },
+    {
+      "category": "road_obstruction",
+      "complaint_type": "Obstruction",
+      "descriptor": "Cone",
+      "count": 5
+    },
+    {
+      "category": "road_obstruction",
+      "complaint_type": "Obstruction",
+      "descriptor": "Merchandise",
+      "count": 5
+    },
+    {
+      "category": "road_obstruction",
+      "complaint_type": "Obstruction",
+      "descriptor": "Sidewalk Display",
+      "count": 4
+    },
+    {
+      "category": "road_obstruction",
+      "complaint_type": "Obstruction",
+      "descriptor": "Sign",
+      "count": 5
+    },
+    {
+      "category": "road_obstruction",
+      "complaint_type": "Obstruction",
+      "descriptor": "Trash or Recycling",
+      "count": 4
+    },
+    {
+      "category": "road_obstruction",
+      "complaint_type": "Obstruction",
+      "descriptor": "Weeds or Grass",
+      "count": 5
+    },
+    {
+      "category": "road_obstruction",
+      "complaint_type": "Overgrown Tree/Branches",
+      "descriptor": "Blocking Street",
+      "count": 4
+    },
+    {
+      "category": "road_obstruction",
+      "complaint_type": "Overgrown Tree/Branches",
+      "descriptor": "Traffic Sign or Signal Blocked",
+      "count": 5
+    },
+    {
+      "category": "road_obstruction",
+      "complaint_type": "Street Condition",
+      "descriptor": "Blocked - Construction",
+      "count": 4
+    },
+    {
+      "category": "road_obstruction",
+      "complaint_type": "Street Condition",
+      "descriptor": "Dumpster - Construction Waste",
+      "count": 4
+    },
+    {
+      "category": "road_obstruction",
+      "complaint_type": "Street Condition",
+      "descriptor": "Unsafe Worksite",
+      "count": 5
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "APPLIANCE",
+      "descriptor": "REFRIGERATOR",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "Abandoned Vehicle",
+      "descriptor": "With License Plate",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "Animal-Abuse",
+      "descriptor": "Other (complaint details)",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "Blocked Driveway",
+      "descriptor": "No Access",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "DOOR/WINDOW",
+      "descriptor": "DOOR",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "Damaged Tree",
+      "descriptor": "Tree Alive - in Poor Condition",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "Drug Activity",
+      "descriptor": "Use Outside",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "E-Scooter",
+      "descriptor": "Improperly Parked or Abandoned",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "HEAT/HOT WATER",
+      "descriptor": "ENTIRE BUILDING",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "Homeless Person Assistance",
+      "descriptor": "Chronic",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "Illegal Fireworks",
+      "descriptor": "N/A",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "Illegal Tree Damage",
+      "descriptor": "Bicycle Chained to Tree",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "Noise",
+      "descriptor": "Noise: Boat(Engine,Music,Etc) (NR10)",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "Noise",
+      "descriptor": "Noise: Construction Equipment (NC1)",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "Noise - Commercial",
+      "descriptor": "Car/Truck Music",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "Noise - Residential",
+      "descriptor": "Banging/Pounding",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "Noise - Residential",
+      "descriptor": "Loud Music/Party",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "Noise - Residential",
+      "descriptor": "Loud Talking",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "Overgrown Tree/Branches",
+      "descriptor": "Clear Street Light",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "Residential Disposal Complaint",
+      "descriptor": "Bin Not Used",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "Residential Disposal Complaint",
+      "descriptor": "Waste Not Separated",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "Rodent",
+      "descriptor": "Rat Sighting",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "Root/Sewer/Sidewalk Condition",
+      "descriptor": "Trees and Sidewalks Program",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "Sewer",
+      "descriptor": "Catch Basin Search (SC2)",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "Sewer",
+      "descriptor": "Sewer Backup (Use Comments) (SA)",
+      "count": 6
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "Sewer Maintenance",
+      "descriptor": "Backup",
+      "count": 7
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "Sewer Maintenance",
+      "descriptor": "Catch Basin Clogged",
+      "count": 6
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "Street Condition",
+      "descriptor": "Crash Cushion Defect",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "Street Condition",
+      "descriptor": "Line/Marking - Faded",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "Street Condition",
+      "descriptor": "Wear & Tear",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "Traffic Signal Condition",
+      "descriptor": "Controller",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "Traffic Signal Condition",
+      "descriptor": "Pedestrian Signal",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "UNSANITARY CONDITION",
+      "descriptor": "PESTS",
+      "count": 1
+    },
+    {
+      "category": "unknown",
+      "complaint_type": "WATER LEAK",
+      "descriptor": "DAMP SPOT",
+      "count": 1
+    }
+  ]
+}

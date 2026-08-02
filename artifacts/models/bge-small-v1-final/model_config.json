@@ -1,0 +1,24 @@
+{
+  "model_name": "bge-small-v1-final",
+  "selected_model_name": "bge-small-v1",
+  "hf_model_name": "BAAI/bge-small-en-v1.5",
+  "classifier": "LogisticRegression",
+  "normalize_embeddings": true,
+  "threshold": 0.4,
+  "training_datasets": [
+    "nyc311_train.json",
+    "nyc311_validation.json"
+  ],
+  "training_record_count": 1700,
+  "mapping": "complaint_mapping.json",
+  "mapping_version": "3.0.0",
+  "labels": [
+    "fallen_tree",
+    "flooding",
+    "pothole",
+    "road_obstruction",
+    "unknown"
+  ],
+  "test_status": "evaluated_and_frozen",
+  "test_metrics_file": "artifacts/models/bge-small-v1-final/test_metrics.json"
+}

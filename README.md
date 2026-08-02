@@ -32,12 +32,29 @@ Run the test suite:
 uv run pytest
 ```
 
+Rebuild the categorized, balanced, and chronological dataset splits from the
+raw NYC 311 snapshots, then evaluate the rules baseline on validation:
+
+```bash
+uv run python scripts/build_dataset.py
+uv run python scripts/evaluate_baseline.py
+```
+
+The evaluation does not read `nyc311_test.json`. Dataset labels are
+mapping-derived weak labels, so perfect agreement with the validation mapping
+is a regression check rather than proof of real-world generalization. See
+[docs/EVALUATION.md](docs/EVALUATION.md) for the current results and limits.
+
 ## Initial API
 
 `POST /v1/incidents/triage` accepts a normalized report and returns a
 deterministic baseline triage decision. This baseline is deliberately simple:
 future multimodal and agentic implementations must beat it in the evaluation
 harness rather than merely appear more sophisticated.
+
+The canonical MVP categories are `pothole`, `fallen_tree`, `flooding`,
+`road_obstruction`, and `unknown`. Their operational definitions and mapping
+boundaries are documented in [docs/TAXONOMY.md](docs/TAXONOMY.md).
 
 Example:
 
@@ -83,6 +100,7 @@ src/civicproof/
   services/     application logic and model adapters
 tests/          fast unit/API tests
 docs/           design decisions and delivery roadmap
+scripts/        reproducible dataset and evaluation entry points
 ```
 
 ## Delivery plan

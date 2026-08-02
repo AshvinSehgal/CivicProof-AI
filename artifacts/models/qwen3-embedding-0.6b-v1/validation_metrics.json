@@ -1,0 +1,142 @@
+{
+  "model_name": "qwen3-embedding-0.6b-v1",
+  "hf_model_name": "Qwen/Qwen3-Embedding-0.6B",
+  "classifier": "LogisticRegression",
+  "model_profile": {
+    "parameter_count": 595776512,
+    "weight_memory_mb": 2272.70703125,
+    "embedding_dimension": 1024,
+    "embedding_dtype": "float32",
+    "stored_vector_bytes": 4096
+  },
+  "performance": {
+    "inference_seconds": 2.3575078330468386,
+    "records_per_second": 127.25302363567572,
+    "peak_process_memory_mb": 1879.859375,
+    "components": {
+      "embedding_seconds": 2.3566542079206556,
+      "classifier_seconds": 0.0008526670280843973
+    }
+  },
+  "dataset": "nyc311_validation.json",
+  "record_count": 300,
+  "ground_truth": {
+    "type": "mapping-derived weak labels",
+    "mapping": "complaint_mapping.json",
+    "mapping_version": "3.0.0",
+    "limitation": "Agreement measures taxonomy regression, not independent generalization."
+  },
+  "labels": [
+    "flooding",
+    "fallen_tree",
+    "pothole",
+    "road_obstruction",
+    "unknown"
+  ],
+  "overall": {
+    "accuracy": 0.9833333333333333,
+    "macro_precision": 0.9838180856689582,
+    "macro_recall": 0.9833333333333334,
+    "macro_f1_score": 0.9830940782149231
+  },
+  "per_category": {
+    "flooding": {
+      "support": 60,
+      "true_positive": 60,
+      "false_positive": 1,
+      "true_negative": 239,
+      "false_negative": 0,
+      "precision": 0.9836065573770492,
+      "recall": 1.0,
+      "f1_score": 0.9917355371900827
+    },
+    "fallen_tree": {
+      "support": 60,
+      "true_positive": 60,
+      "false_positive": 2,
+      "true_negative": 238,
+      "false_negative": 0,
+      "precision": 0.967741935483871,
+      "recall": 1.0,
+      "f1_score": 0.9836065573770492
+    },
+    "pothole": {
+      "support": 60,
+      "true_positive": 60,
+      "false_positive": 2,
+      "true_negative": 238,
+      "false_negative": 0,
+      "precision": 0.967741935483871,
+      "recall": 1.0,
+      "f1_score": 0.9836065573770492
+    },
+    "road_obstruction": {
+      "support": 60,
+      "true_positive": 60,
+      "false_positive": 0,
+      "true_negative": 240,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    "unknown": {
+      "support": 60,
+      "true_positive": 55,
+      "false_positive": 0,
+      "true_negative": 240,
+      "false_negative": 5,
+      "precision": 1.0,
+      "recall": 0.9166666666666666,
+      "f1_score": 0.9565217391304348
+    }
+  },
+  "confusion_matrix": {
+    "rows": "actual",
+    "columns": "predicted",
+    "labels": [
+      "flooding",
+      "fallen_tree",
+      "pothole",
+      "road_obstruction",
+      "unknown"
+    ],
+    "values": [
+      [
+        60,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        60,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        60,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        60,
+        0
+      ],
+      [
+        1,
+        2,
+        2,
+        0,
+        55
+      ]
+    ]
+  }
+}

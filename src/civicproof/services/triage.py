@@ -1,12 +1,36 @@
 from civicproof.domain.incidents import IncidentCategory, IncidentReport, Priority, TriageDecision
 
+
 class BaselineTriageService:
-    """Transparent rules baseline for later model and agent comparisons."""
     _category_terms: dict[IncidentCategory, tuple[str, ...]] = {
-        IncidentCategory.FLOODING: ("flood", "standing water", "drain"),
-        IncidentCategory.FALLEN_TREE: ("fallen tree", "tree down", "downed tree"),
+        IncidentCategory.FLOODING: (
+            "flood",
+            "standing water",
+            "ponding",
+            "manhole overflow",
+            "sewer overflow",
+        ),
+        IncidentCategory.FALLEN_TREE: (
+            "fallen tree",
+            "tree down",
+            "downed tree",
+            "branch or limb has fallen",
+            "entire tree has fallen",
+            "branch cracked and will fall",
+            "tree leaning/uprooted",
+            "tree trunk split",
+        ),
         IncidentCategory.POTHOLE: ("pothole", "road hole"),
-        IncidentCategory.ROAD_OBSTRUCTION: ("blocked road", "blocking the road", "debris"),
+        IncidentCategory.ROAD_OBSTRUCTION: (
+            "blocked road",
+            "blocking the road",
+            "blocking street",
+            "blocked - construction",
+            "obstruction",
+            "debris",
+            "dumpster",
+            "traffic sign or signal blocked",
+        ),
     }
     _danger_terms = ("injury", "trapped", "power line", "cannot pass", "blocking the road")
 

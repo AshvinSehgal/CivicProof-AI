@@ -1,0 +1,142 @@
+{
+  "model_name": "baseline",
+  "hf_model_name": null,
+  "classifier": "DeterministicRules",
+  "baseline_version": "rules-v2",
+  "model_profile": {
+    "parameter_count": 0,
+    "weight_memory_mb": 0.0,
+    "embedding_dimension": null,
+    "embedding_dtype": null,
+    "stored_vector_bytes": null
+  },
+  "performance": {
+    "inference_seconds": 0.001369791803881526,
+    "records_per_second": 219011.38490528386,
+    "peak_process_memory_mb": 117.859375,
+    "components": {
+      "rules_seconds": 0.001369791803881526
+    }
+  },
+  "dataset": "nyc311_validation.json",
+  "record_count": 300,
+  "ground_truth": {
+    "type": "mapping-derived weak labels",
+    "mapping": "complaint_mapping.json",
+    "mapping_version": "3.0.0",
+    "limitation": "Agreement measures taxonomy regression, not independent generalization."
+  },
+  "labels": [
+    "flooding",
+    "fallen_tree",
+    "pothole",
+    "road_obstruction",
+    "unknown"
+  ],
+  "overall": {
+    "accuracy": 1.0,
+    "macro_precision": 1.0,
+    "macro_recall": 1.0,
+    "macro_f1_score": 1.0
+  },
+  "per_category": {
+    "flooding": {
+      "support": 60,
+      "true_positive": 60,
+      "false_positive": 0,
+      "true_negative": 240,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    "fallen_tree": {
+      "support": 60,
+      "true_positive": 60,
+      "false_positive": 0,
+      "true_negative": 240,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    "pothole": {
+      "support": 60,
+      "true_positive": 60,
+      "false_positive": 0,
+      "true_negative": 240,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    "road_obstruction": {
+      "support": 60,
+      "true_positive": 60,
+      "false_positive": 0,
+      "true_negative": 240,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    "unknown": {
+      "support": 60,
+      "true_positive": 60,
+      "false_positive": 0,
+      "true_negative": 240,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    }
+  },
+  "confusion_matrix": {
+    "rows": "actual",
+    "columns": "predicted",
+    "labels": [
+      "flooding",
+      "fallen_tree",
+      "pothole",
+      "road_obstruction",
+      "unknown"
+    ],
+    "values": [
+      [
+        60,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        60,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        60,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        60,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        60
+      ]
+    ]
+  }
+}

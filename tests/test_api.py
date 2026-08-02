@@ -1,12 +1,14 @@
 from fastapi.testclient import TestClient
+
 from civicproof.main import app
+
 
 def test_health() -> None:
     with TestClient(app) as client:
         response = client.get("/health")
-
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
+
 
 def test_triage_returns_explainable_baseline() -> None:
     payload = {
@@ -23,4 +25,4 @@ def test_triage_returns_explainable_baseline() -> None:
     assert decision["category"] == "fallen_tree"
     assert decision["priority"] == "high"
     assert decision["requires_human_review"] is True
-    assert decision["baseline_version"] == "rules-v1"
+    assert decision["baseline_version"] == "rules-v2"

@@ -1,0 +1,110 @@
+{
+  "version": "3.0.0",
+  "source": {
+    "dataset": "NYC 311 Service Requests from 2020 to Present",
+    "dataset_id": "erm2-nwe9",
+    "review_basis": [
+      "sorted_complaint_descriptors.json",
+      "nyc311_sample.json",
+      "nyc311_targeted_categorized.json"
+    ]
+  },
+  "match_policy": {
+    "complaint_type": "exact",
+    "descriptor": "exact",
+    "case_sensitive": true
+  },
+  "categories": [
+    {
+      "category": "pothole",
+      "includes": [
+        {
+          "complaint_type": "Street Condition",
+          "descriptors": [
+            "Pothole"
+          ]
+        }
+      ]
+    },
+    {
+      "category": "fallen_tree",
+      "includes": [
+        {
+          "complaint_type": "Damaged Tree",
+          "descriptors": [
+            "Branch or Limb Has Fallen Down",
+            "Entire Tree Has Fallen Down",
+            "Branch Cracked and Will Fall",
+            "Tree Leaning/Uprooted",
+            "Tree Trunk Split"
+          ]
+        }
+      ]
+    },
+    {
+      "category": "flooding",
+      "includes": [
+        {
+          "complaint_type": "Sewer",
+          "descriptors": [
+            "Catch Basin Clogged/Flooding (Use Comments) (SC)",
+            "Street Flooding (SJ)",
+            "Manhole Overflow (Use Comments) (SA1)",
+            "Highway Flooding (SH)",
+            "RAIN GARDEN FLOODING (SRGFLD)"
+          ]
+        },
+        {
+          "complaint_type": "Sewer Maintenance",
+          "descriptors": [
+            "Flooding on Street",
+            "Flooding on Highway"
+          ]
+        },
+        {
+          "complaint_type": "DEP Street Condition",
+          "descriptors": [
+            "Ponding"
+          ]
+        }
+      ]
+    },
+    {
+      "category": "road_obstruction",
+      "includes": [
+        {
+          "complaint_type": "Street Condition",
+          "descriptors": [
+            "Blocked - Construction",
+            "Dumpster - Construction Waste",
+            "Unsafe Worksite"
+          ]
+        },
+        {
+          "complaint_type": "Overgrown Tree/Branches",
+          "descriptors": [
+            "Blocking Street",
+            "Traffic Sign or Signal Blocked"
+          ]
+        },
+        {
+          "complaint_type": "Obstruction",
+          "descriptors": [
+            "Cone",
+            "Trash or Recycling",
+            "Weeds or Grass",
+            "Merchandise",
+            "Sign",
+            "Sidewalk Display",
+            "Donation Collection Bin",
+            "Coin-Operated Ride"
+          ]
+        }
+      ]
+    }
+  ],
+  "fallback": {
+    "category": "unknown",
+    "reason": "No exact complaint_type and descriptor pair matched a canonical incident category."
+  }
+}

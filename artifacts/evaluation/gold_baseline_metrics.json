@@ -1,0 +1,192 @@
+{
+  "baseline_version": "rules-v2",
+  "dataset": "nyc311_gold_test.json",
+  "record_count": 250,
+  "gold_review": {
+    "status": "approved",
+    "reviewed_on": "2026-08-01"
+  },
+  "limitations": [
+    "Labels originated from the reviewed taxonomy before manual approval.",
+    "Fallen-tree boundary cases contain a documented synthetic obstruction clause.",
+    "This gold set must not be used to tune rules-v2."
+  ],
+  "labels": [
+    "flooding",
+    "fallen_tree",
+    "pothole",
+    "road_obstruction",
+    "unknown"
+  ],
+  "overall": {
+    "accuracy": 0.98,
+    "macro_precision": 0.9818181818181818,
+    "macro_recall": 0.9800000000000001,
+    "macro_f1_score": 0.9799498746867167
+  },
+  "per_category": {
+    "flooding": {
+      "support": 50,
+      "true_positive": 50,
+      "false_positive": 0,
+      "true_negative": 200,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    "fallen_tree": {
+      "support": 50,
+      "true_positive": 50,
+      "false_positive": 0,
+      "true_negative": 200,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    "pothole": {
+      "support": 50,
+      "true_positive": 50,
+      "false_positive": 0,
+      "true_negative": 200,
+      "false_negative": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0
+    },
+    "road_obstruction": {
+      "support": 50,
+      "true_positive": 45,
+      "false_positive": 0,
+      "true_negative": 200,
+      "false_negative": 5,
+      "precision": 1.0,
+      "recall": 0.9,
+      "f1_score": 0.9473684210526315
+    },
+    "unknown": {
+      "support": 50,
+      "true_positive": 50,
+      "false_positive": 5,
+      "true_negative": 195,
+      "false_negative": 0,
+      "precision": 0.9090909090909091,
+      "recall": 1.0,
+      "f1_score": 0.9523809523809523
+    }
+  },
+  "per_boundary": {
+    "canonical_category": {
+      "record_count": 100,
+      "correct": 95,
+      "incorrect": 5,
+      "accuracy": 0.95,
+      "actual_category_counts": {
+        "pothole": 50,
+        "road_obstruction": 50
+      },
+      "predicted_category_counts": {
+        "pothole": 50,
+        "road_obstruction": 45,
+        "unknown": 5
+      }
+    },
+    "explicit_flooding": {
+      "record_count": 50,
+      "correct": 50,
+      "incorrect": 0,
+      "accuracy": 1.0,
+      "actual_category_counts": {
+        "flooding": 50
+      },
+      "predicted_category_counts": {
+        "flooding": 50
+      }
+    },
+    "fallen_tree_vs_road_obstruction": {
+      "record_count": 50,
+      "correct": 50,
+      "incorrect": 0,
+      "accuracy": 1.0,
+      "actual_category_counts": {
+        "fallen_tree": 50
+      },
+      "predicted_category_counts": {
+        "fallen_tree": 50
+      }
+    },
+    "out_of_scope_unknown": {
+      "record_count": 30,
+      "correct": 30,
+      "incorrect": 0,
+      "accuracy": 1.0,
+      "actual_category_counts": {
+        "unknown": 30
+      },
+      "predicted_category_counts": {
+        "unknown": 30
+      }
+    },
+    "sewer_only": {
+      "record_count": 20,
+      "correct": 20,
+      "incorrect": 0,
+      "accuracy": 1.0,
+      "actual_category_counts": {
+        "unknown": 20
+      },
+      "predicted_category_counts": {
+        "unknown": 20
+      }
+    }
+  },
+  "confusion_matrix": {
+    "rows": "actual",
+    "columns": "predicted",
+    "labels": [
+      "flooding",
+      "fallen_tree",
+      "pothole",
+      "road_obstruction",
+      "unknown"
+    ],
+    "values": [
+      [
+        50,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        50,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        50,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        45,
+        5
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        50
+      ]
+    ]
+  }
+}
