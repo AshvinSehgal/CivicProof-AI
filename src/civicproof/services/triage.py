@@ -1,6 +1,5 @@
 from civicproof.domain.incidents import IncidentCategory, IncidentReport, Priority, TriageDecision
 
-
 class BaselineTriageService:
     _category_terms: dict[IncidentCategory, tuple[str, ...]] = {
         IncidentCategory.FLOODING: (
@@ -62,3 +61,16 @@ class BaselineTriageService:
             confidence=0.75 if category is not IncidentCategory.UNKNOWN else 0.35,
             rationale=rationale,
         )
+
+_critical_terms = ('person trapped', 'people trapped', 'injury', 'injured', 'live power line', 'downed power line', 'gas leak', 'emergency vehicle cannot pass')
+_high_impact_terms = ('road completely blocked', 'street completely blocked', 'road impassable', 'street impassable', 'cannot pass', 'blocking the road', 'blocking street', 'water entering building', 'water entering basement', 'rapidly rising water')
+
+def assign_priority(report: IncidentReport, category: IncidentCategory) -> Priority:
+    full_description = (report.complaint_type + ' : ' + report.descriptor + ' , ' + report.description).casefold()
+    if any(phrase in full_description for phrase in _critical_terms):
+        return Priority.CRITICAL
+    elif any(phrase in full_description for phrase in _high_impact_terms):
+        return Priority.HIGH
+    elif category != 'unknown':
+        return Priority.MEDIUM
+    return Priority.LOW

@@ -18,6 +18,8 @@ class Priority(StrEnum):
 class IncidentReport(BaseModel):
     source: ReportSource
     external_id: str = Field(min_length=1, max_length=200)
+    complaint_type: str = Field(min_length=1, max_length=500)
+    descriptor: str = Field(min_length=1, max_length=5_000)
     description: str = Field(min_length=3, max_length=5_000)
     latitude: float = Field(ge=-90, le=90)
     longitude: float = Field(ge=-180, le=180)
@@ -27,5 +29,6 @@ class TriageDecision(BaseModel):
     priority: Priority
     confidence: float = Field(ge=0, le=1)
     rationale: list[str]
+    probabilities: dict[str, float] = Field(default_factory=dict)
     requires_human_review: bool = True
-    baseline_version: str = "rules-v2"
+    model_version: str = "rules-v2"
