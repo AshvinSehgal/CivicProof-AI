@@ -24,6 +24,25 @@ class IncidentReport(BaseModel):
     latitude: float = Field(ge=-90, le=90)
     longitude: float = Field(ge=-180, le=180)
     media_urls: list[str] = Field(default_factory=list, max_length=10)
+class WeatherStatus(StrEnum):
+    AVAILABLE = "available"
+    UNAVAILABLE = "unavailable"
+
+class WeatherAlert(BaseModel):
+    alert_id: str
+    event: str | None = None
+    severity: str | None = None
+    urgency: str | None = None
+    certainty: str | None = None
+    headline: str | None = None
+    effective: str | None = None
+    expires: str | None = None
+
+class WeatherEvidence(BaseModel):
+    status: WeatherStatus
+    alerts: list[WeatherAlert] = Field(default_factory=list)
+    error_type: str | None = None
+
 class TriageDecision(BaseModel):
     category: IncidentCategory
     priority: Priority
@@ -32,3 +51,4 @@ class TriageDecision(BaseModel):
     probabilities: dict[str, float] = Field(default_factory=dict)
     requires_human_review: bool = True
     model_version: str = "rules-v2"
+    weather_evidence: WeatherEvidence | None = None
