@@ -1,5 +1,4 @@
-from civicproof.domain.incidents import IncidentCategory, IncidentReport, Priority, TriageDecision
-
+from civicproof.domain.incidents import IncidentCategory, IncidentReport, Priority, TriageDecision, WeatherEvidence, WeatherStatus
 class BaselineTriageService:
     _category_terms: dict[IncidentCategory, tuple[str, ...]] = {
         IncidentCategory.FLOODING: (
@@ -74,3 +73,32 @@ def assign_priority(report: IncidentReport, category: IncidentCategory) -> Prior
     elif category != 'unknown':
         return Priority.MEDIUM
     return Priority.LOW
+
+def weather_risk(weather_evidence: WeatherEvidence, category: IncidentCategory, priority: Priority) -> tuple[Priority, list[str]]:
+    if weather_evidence.status is WeatherStatus.UNAVAILABLE:
+        return priority, []
+    for alert in weather_evidence.alerts:
+        if alert.event is None or alert.severity is None:
+            continue
+        event = alert.event.casefold()
+        severity = alert.severity.casefold()
+        if severity != 'severe' and severity != 'extreme':
+            continue
+        relevant_alert = False
+        if category is IncidentCategory.FLOODING and event in ('flood warning', 'flash flood warning', 'coastal flood warning'):
+            relevant_alert = True
+        elif category is IncidentCategory.FALLEN_TREE and event in ('high wind warning', 'severe thunderstorm warning'):
+            relevant_alert = True
+        elif category is IncidentCategory.ROAD_OBSTRUCTION and event == 'severe thunderstorm warning':
+            relevant_alert = True
+        if relevant_alert is False:
+            continue
+        if priority is Priority.LOW:
+            new_priority = Priority.MEDIUM
+        elif priority is Priority.MEDIUM:
+            new_priority = Priority.HIGH
+        else:
+            return priority, []
+        rationale = [f"Relevant {alert.event} increased priority from {priority.value} to {new_priority.value}"]
+        return new_priority, rationale
+    return priority, []

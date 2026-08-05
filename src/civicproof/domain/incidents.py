@@ -42,6 +42,7 @@ class WeatherEvidence(BaseModel):
     status: WeatherStatus
     alerts: list[WeatherAlert] = Field(default_factory=list)
     error_type: str | None = None
+    cache_hit: bool = False
 
 class TriageDecision(BaseModel):
     category: IncidentCategory

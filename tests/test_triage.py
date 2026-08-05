@@ -1,5 +1,5 @@
-from civicproof.domain.incidents import IncidentCategory, IncidentReport, Priority
-from civicproof.services.triage import assign_priority, BaselineTriageService
+from civicproof.domain.incidents import IncidentCategory, IncidentReport, Priority, WeatherAlert, WeatherEvidence, WeatherStatus
+from civicproof.services.triage import assign_priority, BaselineTriageService, weather_risk
 
 
 def test_unknown_report_abstains_with_low_confidence() -> None:
@@ -111,3 +111,60 @@ def test_fallen_power_line_has_critical_priority() -> None:
             longitude=-74.006,
         )
     assert assign_priority(report, IncidentCategory.ROAD_OBSTRUCTION) is Priority.CRITICAL
+
+def test_flood_warning_raises_flooding_priority() -> None:
+    weather_evidence = WeatherEvidence(
+        status=WeatherStatus.AVAILABLE,
+        alerts=[WeatherAlert(alert_id='flood-alert', event='Flood Warning', severity='Severe')]
+    )
+    priority, rationale = weather_risk(weather_evidence, IncidentCategory.FLOODING, Priority.MEDIUM)
+    assert priority is Priority.HIGH
+    assert rationale == ['Relevant Flood Warning increased priority from medium to high']
+
+def test_high_wind_warning_raises_fallen_tree_priority() -> None:
+    weather_evidence = WeatherEvidence(
+        status=WeatherStatus.AVAILABLE,
+        alerts=[WeatherAlert(alert_id='wind-alert', event='High Wind Warning', severity='Severe')]
+    )
+    priority, rationale = weather_risk(weather_evidence, IncidentCategory.FALLEN_TREE, Priority.MEDIUM)
+    assert priority is Priority.HIGH
+    assert len(rationale) == 1
+
+def test_severe_thunderstorm_warning_raises_road_obstruction_priority() -> None:
+    weather_evidence = WeatherEvidence(
+        status=WeatherStatus.AVAILABLE,
+        alerts=[WeatherAlert(alert_id='storm-alert', event='Severe Thunderstorm Warning', severity='Severe')]
+    )
+    priority, rationale = weather_risk(weather_evidence, IncidentCategory.ROAD_OBSTRUCTION, Priority.MEDIUM)
+    assert priority is Priority.HIGH
+    assert len(rationale) == 1
+
+def test_unrelated_weather_alert_does_not_change_priority() -> None:
+    weather_evidence = WeatherEvidence(
+        status=WeatherStatus.AVAILABLE,
+        alerts=[WeatherAlert(alert_id='flood-alert', event='Flood Warning', severity='Severe')]
+    )
+    priority, rationale = weather_risk(weather_evidence, IncidentCategory.POTHOLE, Priority.MEDIUM)
+    assert priority is Priority.MEDIUM
+    assert rationale == []
+
+def test_no_weather_alerts_do_not_change_priority() -> None:
+    weather_evidence = WeatherEvidence(status=WeatherStatus.AVAILABLE)
+    priority, rationale = weather_risk(weather_evidence, IncidentCategory.FLOODING, Priority.MEDIUM)
+    assert priority is Priority.MEDIUM
+    assert rationale == []
+
+def test_unavailable_weather_does_not_change_priority() -> None:
+    weather_evidence = WeatherEvidence(status=WeatherStatus.UNAVAILABLE, error_type='timeout')
+    priority, rationale = weather_risk(weather_evidence, IncidentCategory.FLOODING, Priority.MEDIUM)
+    assert priority is Priority.MEDIUM
+    assert rationale == []
+
+def test_weather_never_changes_critical_priority() -> None:
+    weather_evidence = WeatherEvidence(
+        status=WeatherStatus.AVAILABLE,
+        alerts=[WeatherAlert(alert_id='flood-alert', event='Flood Warning', severity='Extreme')]
+    )
+    priority, rationale = weather_risk(weather_evidence, IncidentCategory.FLOODING, Priority.CRITICAL)
+    assert priority is Priority.CRITICAL
+    assert rationale == []

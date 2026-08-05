@@ -47,7 +47,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     )
     try:
         settings = get_settings()
-        weather_client = NWSWeatherClient(settings.nws_base_url, settings.nws_user_agent, settings.nws_timeout_seconds)
+        weather_client = NWSWeatherClient(settings.nws_base_url, settings.nws_user_agent, settings.nws_timeout_seconds, settings.nws_cache_ttl_seconds)
     except Exception as error:
         logger.exception(
             json.dumps(

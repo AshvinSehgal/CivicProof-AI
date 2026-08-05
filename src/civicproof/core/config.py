@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     nws_user_agent: str = "CivicProof/0.1 (local-development)"
     nws_base_url: str = "https://api.weather.gov"
     nws_timeout_seconds: float = 5.0
+    nws_cache_ttl_seconds: float = 300.0
 
 @lru_cache
 def get_settings() -> Settings:

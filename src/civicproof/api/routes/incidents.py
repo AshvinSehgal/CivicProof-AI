@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request
 from civicproof.domain.incidents import IncidentCategory, Priority, IncidentReport, TriageDecision
-from civicproof.services.triage import assign_priority
+from civicproof.services.triage import assign_priority, weather_risk
 import json
 import logging
 import time
@@ -41,6 +41,10 @@ def triage_incident(report: IncidentReport, request: Request) -> TriageDecision:
     weather_lookup_start = time.perf_counter()
     weather_evidence = weather_client.get_active_alerts(report.latitude, report.longitude)
     weather_lookup_time = time.perf_counter() - weather_lookup_start
+    pred_priority, weather_rationale = weather_risk(weather_evidence, pred_category, pred_priority)
+    pred_rationale.extend(weather_rationale)
+    if len(weather_rationale) > 0:
+        requires_human_review = True
     decision = TriageDecision(
        category=pred_category,
        priority=pred_priority,
@@ -65,6 +69,7 @@ def triage_incident(report: IncidentReport, request: Request) -> TriageDecision:
                 'weather_lookup_time_ms': round(weather_lookup_time * 1000, 2),
                 'weather_status': weather_evidence.status.value,
                 'weather_alert_count': len(weather_evidence.alerts),
+                'weather_cache_hit': weather_evidence.cache_hit,
                 'source': report.source.value
             }
         )

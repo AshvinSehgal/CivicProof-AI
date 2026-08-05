@@ -1,8 +1,9 @@
 import httpx
 from civicproof.domain.incidents import WeatherAlert, WeatherEvidence, WeatherStatus
+import time
 
 class NWSWeatherClient:
-    def __init__(self, base_url, user_agent, timeout_seconds, transport=None):
+    def __init__(self, base_url, user_agent, timeout_seconds, cache_ttl_seconds, transport=None):
         self.client = httpx.Client(base_url=base_url,
             headers={
                 "User-Agent": user_agent,
@@ -10,10 +11,23 @@ class NWSWeatherClient:
             },
             timeout=timeout_seconds,transport=transport
         )
+        self.cache = {}
+        self.cache_ttl_seconds = cache_ttl_seconds
+        
     def close(self):
         self.client.close()
-        
+
     def get_active_alerts(self, latitude, longitude):
+        rounded_latitude = round(latitude, 3)
+        rounded_longitude = round(longitude, 3)
+        rounded_point = str(rounded_latitude) + ',' + str(rounded_longitude)
+        cached_weather_evidence = self.cache.get(rounded_point, None)
+        if cached_weather_evidence is not None:
+            weather_fetched_time = time.monotonic() - cached_weather_evidence['fetched_time']
+            if weather_fetched_time < self.cache_ttl_seconds:
+                return cached_weather_evidence['weather_evidence'].model_copy(update={"cache_hit": True})
+            else:
+                del self.cache[rounded_point]
         point = str(latitude) + "," + str(longitude)
         try:
             response = self.client.get("/alerts/active", params={"point": point})
@@ -54,4 +68,9 @@ class NWSWeatherClient:
                     expires=properties.get("expires"),
                 )
             )
-        return WeatherEvidence(status=WeatherStatus.AVAILABLE, alerts=alerts)
+        weather_evidence = WeatherEvidence(status=WeatherStatus.AVAILABLE, alerts=alerts)
+        self.cache[rounded_point] = {
+            'weather_evidence': weather_evidence,
+            'fetched_time': time.monotonic()
+        }
+        return weather_evidence

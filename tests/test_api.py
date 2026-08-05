@@ -37,8 +37,28 @@ class FailingPredictionClassifier:
     def predict(self, complaint_type, descriptor):
         raise RuntimeError('Prediction failed')
 
+class FloodingEmbeddingClassifier:
+    model_name = 'bge-small-v1-final'
+    def load_model(self):
+        pass
+    def predict(self, complaint_type, descriptor):
+        return {
+            "category": "flooding",
+            "confidence": 0.9,
+            "probabilities": {
+                "fallen_tree": 0.025,
+                "flooding": 0.9,
+                "pothole": 0.025,
+                "road_obstruction": 0.025,
+                "unknown": 0.025,
+            },
+            "requires_human_review": False,
+            "model_name": "bge-small-v1-final",
+            "threshold": 0.4,
+        }
+
 class FakeWeatherClient:
-    def __init__(self, base_url, user_agent, timeout_seconds):
+    def __init__(self, base_url, user_agent, timeout_seconds, cache_ttl_seconds):
         pass
     def get_active_alerts(self, latitude, longitude):
         return WeatherEvidence(
@@ -60,7 +80,7 @@ class FakeWeatherClient:
         pass
 
 class UnavailableWeatherClient:
-    def __init__(self, base_url, user_agent, timeout_seconds):
+    def __init__(self, base_url, user_agent, timeout_seconds, cache_ttl_seconds):
         pass
     def get_active_alerts(self, latitude, longitude):
         return WeatherEvidence(
@@ -128,6 +148,7 @@ def test_triage_returns_explainable_embedding_prediction(monkeypatch, caplog) ->
     assert event['weather_lookup_time_ms'] >= 0
     assert event['weather_status'] == 'available'
     assert event['weather_alert_count'] == 1
+    assert event['weather_cache_hit'] is False
     all_logs = caplog.text
     assert payload['description'] not in all_logs
     assert payload['descriptor'] not in all_logs
@@ -240,7 +261,7 @@ def test_weather_timeout_does_not_fail_triage(monkeypatch) -> None:
 def test_weather_client_closes_once(monkeypatch) -> None:
     close_count = {"value": 0}
     class CountingWeatherClient:
-        def __init__(self, base_url, user_agent, timeout_seconds):
+        def __init__(self, base_url, user_agent, timeout_seconds, cache_ttl_seconds):
             pass
         def close(self):
             close_count["value"] += 1
@@ -250,3 +271,24 @@ def test_weather_client_closes_once(monkeypatch) -> None:
         response = client.get('/health')
     assert response.status_code == 200
     assert close_count["value"] == 1
+
+def test_relevant_weather_raises_priority_and_requires_review(monkeypatch) -> None:
+    monkeypatch.setattr('civicproof.main.EmbeddingClassifier', FloodingEmbeddingClassifier)
+    monkeypatch.setattr('civicproof.main.NWSWeatherClient', FakeWeatherClient)
+    payload = {
+        "source": "open311",
+        "external_id": "test-flooding",
+        "complaint_type": "Sewer",
+        "descriptor": "Street Flooding",
+        "description": "Water reported on the street",
+        "latitude": 40.7128,
+        "longitude": -74.006,
+    }
+    with TestClient(app) as client:
+        response = client.post('/v1/incidents/triage', json=payload)
+    assert response.status_code == 200
+    decision = response.json()
+    assert decision['category'] == 'flooding'
+    assert decision['priority'] == 'high'
+    assert decision['requires_human_review'] is True
+    assert decision['rationale'][-1] == 'Relevant Flood Warning increased priority from medium to high'
