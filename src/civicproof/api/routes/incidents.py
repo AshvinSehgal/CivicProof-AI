@@ -1,12 +1,17 @@
-from fastapi import APIRouter, Request
-from civicproof.domain.incidents import IncidentCategory, Priority, IncidentReport, TriageDecision
+from fastapi import APIRouter, Request, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
+from civicproof.domain.incidents import IncidentCategory, Priority, IncidentReport, TriageDecision, IncidentRead, ReportSource
 from civicproof.services.triage import assign_priority, weather_risk
+from civicproof.db.session import get_database_session
+from civicproof.repositories.incidents import IncidentRepository
 import json
 import logging
+from typing import Annotated
 import time
 
 logger = logging.getLogger('civicproof')
 router = APIRouter(prefix="/incidents", tags=["incidents"])
+async_session_dep = Annotated[AsyncSession, Depends(get_database_session)]
 
 @router.post("/triage", response_model=TriageDecision)
 def triage_incident(report: IncidentReport, request: Request) -> TriageDecision:
@@ -75,3 +80,27 @@ def triage_incident(report: IncidentReport, request: Request) -> TriageDecision:
         )
     )
     return decision
+
+@router.get("/{source}/{external_id}", response_model=IncidentRead)
+async def fetch_incident(source: ReportSource, external_id: str, async_session: async_session_dep):
+    incident_repository = IncidentRepository(async_session)
+    incident = await incident_repository.get_incident(source.value, external_id)
+    if incident is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            detail=f"Incident with source {source.value} and external_id {external_id} does not exist."
+        )
+    return IncidentRead(
+        id=incident.id,
+        source=incident.source,
+        external_id=incident.external_id,
+        complaint_type=incident.complaint_type,
+        descriptor=incident.descriptor,
+        description=incident.description,
+        latitude=incident.latitude,
+        longitude=incident.longitude,
+        category=incident.category,
+        source_created_at=incident.source_created_at,
+        ingested_at=incident.ingested_at,
+        updated_at=incident.updated_at
+    )

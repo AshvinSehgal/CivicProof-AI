@@ -6,6 +6,7 @@ from civicproof.core.config import get_settings
 from civicproof.services.embedding_classifier import EmbeddingClassifier
 from civicproof.core.logging import configure_logging
 from civicproof.services.weather import NWSWeatherClient
+from civicproof.db.session import close_database
 import json
 import logging
 import time
@@ -65,6 +66,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         yield
     finally:
         weather_client.close()
+        await close_database()
 
 app = FastAPI(
     title="CivicProof AI",

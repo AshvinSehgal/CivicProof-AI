@@ -1,5 +1,7 @@
 from enum import StrEnum
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
+from datetime import datetime
+
 class ReportSource(StrEnum):
     OPEN311 = "open311"
     USER = "user"
@@ -15,6 +17,22 @@ class Priority(StrEnum):
     MEDIUM = "medium"
     HIGH = "high"
     CRITICAL = "critical"
+
+class IncidentRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    source: ReportSource
+    external_id: str = Field(min_length=1, max_length=200)
+    complaint_type: str = Field(min_length=1, max_length=500)
+    descriptor: str = Field(min_length=1, max_length=5_000)
+    description: str = Field(min_length=3, max_length=5_000)
+    latitude: float = Field(ge=-90, le=90)
+    longitude: float = Field(ge=-180, le=180)
+    category: str = Field(min_length=1, max_length=100)
+    source_created_at: datetime
+    ingested_at: datetime
+    updated_at: datetime
+    
 class IncidentReport(BaseModel):
     source: ReportSource
     external_id: str = Field(min_length=1, max_length=200)
