@@ -92,6 +92,25 @@ class EmbeddingClassifier():
             'threshold': self.threshold
         }
 
+    def encode_incident(self, complaint_type, descriptor, description):
+        embeddings = self.encode_incidents([
+            (complaint_type, descriptor, description)
+        ])
+        return embeddings[0]
+
+    def encode_incidents(self, incidents):
+        if self.embedding_model is None:
+            raise RuntimeError("The embedding classifier has not been loaded")
+        sentences = [
+            complaint_type + ' : ' + descriptor + ' : ' + description
+            for complaint_type, descriptor, description in incidents
+        ]
+        embeddings = self.embedding_model.encode(
+            sentences,
+            normalize_embeddings=self.normalize_embeddings
+        )
+        return embeddings.tolist()
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run classifier on given complaint_type and descriptor')
     parser.add_argument('--complaint_type', type=str, required=True, help='Type of complaint')

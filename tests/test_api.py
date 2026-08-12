@@ -4,6 +4,8 @@ from civicproof.main import app
 from civicproof.domain.incidents import WeatherAlert, WeatherEvidence, WeatherStatus
 import json
 import logging
+from datetime import datetime, timezone
+from types import SimpleNamespace
 
 class FakeEmbeddingClassifier():
     model_name = 'bge-small-v1-final'
@@ -90,6 +92,65 @@ class UnavailableWeatherClient:
     def close(self):
         pass
 
+def create_stored_incident(external_id='stored-001'):
+    return SimpleNamespace(
+        id=1,
+        source='open311',
+        external_id=external_id,
+        complaint_type='Street Condition',
+        descriptor='Pothole',
+        description='Large pothole in the roadway',
+        latitude=40.7128,
+        longitude=-74.006,
+        category='pothole',
+        source_created_at=datetime(2026, 8, 11, 12, 0, tzinfo=timezone.utc),
+        ingested_at=datetime(2026, 8, 11, 12, 1, tzinfo=timezone.utc),
+        updated_at=datetime(2026, 8, 11, 12, 1, tzinfo=timezone.utc),
+        embedding=None
+    )
+
+class FakeIncidentRepository:
+    def __init__(self, session):
+        pass
+    async def get_incident(self, source, external_id):
+        if external_id == 'does-not-exist':
+            return None
+        return create_stored_incident(external_id)
+    async def find_nearby_incidents(self, **search_values):
+        nearby_incident = create_stored_incident('stored-nearby')
+        nearby_incident.id = 2
+        return [(nearby_incident, 42.5, None)]
+
+class FakeIncidentClusterRepository:
+    def __init__(self, session):
+        pass
+    async def get_cluster_details(self, cluster_id):
+        if cluster_id == 404:
+            return None
+        cluster = SimpleNamespace(
+            id=cluster_id,
+            category='pothole',
+            status='active',
+            first_reported_at=datetime(2026, 8, 11, 12, 0, tzinfo=timezone.utc),
+            last_reported_at=datetime(2026, 8, 11, 12, 5, tzinfo=timezone.utc),
+            report_count=1,
+            created_at=datetime(2026, 8, 11, 12, 0, tzinfo=timezone.utc),
+            updated_at=datetime(2026, 8, 11, 12, 5, tzinfo=timezone.utc)
+        )
+        member = SimpleNamespace(
+            incident_id=1,
+            distance_meters=0.0,
+            link_score=1.0,
+            link_reason={'reason': 'cluster_anchor'},
+            linked_at=datetime(2026, 8, 11, 12, 0, tzinfo=timezone.utc)
+        )
+        return {
+            'cluster': cluster,
+            'centroid_latitude': 40.7128,
+            'centroid_longitude': -74.006,
+            'members': [(member, create_stored_incident())]
+        }
+
 def test_health(monkeypatch) -> None:
     monkeypatch.setattr('civicproof.main.EmbeddingClassifier', FakeEmbeddingClassifier)
     monkeypatch.setattr('civicproof.main.NWSWeatherClient', FakeWeatherClient)
@@ -97,6 +158,59 @@ def test_health(monkeypatch) -> None:
         response = client.get("/health")
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
+
+def test_fetch_incident_returns_stored_incident(monkeypatch) -> None:
+    monkeypatch.setattr('civicproof.main.EmbeddingClassifier', FakeEmbeddingClassifier)
+    monkeypatch.setattr('civicproof.main.NWSWeatherClient', FakeWeatherClient)
+    monkeypatch.setattr('civicproof.api.routes.incidents.IncidentRepository', FakeIncidentRepository)
+    with TestClient(app) as client:
+        response = client.get('/v1/incidents/open311/stored-001')
+    assert response.status_code == 200
+    incident = response.json()
+    assert incident['external_id'] == 'stored-001'
+    assert incident['category'] == 'pothole'
+    assert incident['source_created_at'] == '2026-08-11T12:00:00Z'
+
+def test_fetch_incident_returns_404_for_unknown_external_id(monkeypatch) -> None:
+    monkeypatch.setattr('civicproof.main.EmbeddingClassifier', FakeEmbeddingClassifier)
+    monkeypatch.setattr('civicproof.main.NWSWeatherClient', FakeWeatherClient)
+    monkeypatch.setattr('civicproof.api.routes.incidents.IncidentRepository', FakeIncidentRepository)
+    with TestClient(app) as client:
+        response = client.get('/v1/incidents/open311/does-not-exist')
+    assert response.status_code == 404
+    assert response.json()['detail'] == 'Incident with source open311 and external_id does-not-exist does not exist.'
+
+def test_fetch_incident_rejects_invalid_source(monkeypatch) -> None:
+    monkeypatch.setattr('civicproof.main.EmbeddingClassifier', FakeEmbeddingClassifier)
+    monkeypatch.setattr('civicproof.main.NWSWeatherClient', FakeWeatherClient)
+    with TestClient(app) as client:
+        response = client.get('/v1/incidents/invalid/stored-001')
+    assert response.status_code == 422
+
+def test_fetch_nearby_incidents_returns_distance(monkeypatch) -> None:
+    monkeypatch.setattr('civicproof.main.EmbeddingClassifier', FakeEmbeddingClassifier)
+    monkeypatch.setattr('civicproof.main.NWSWeatherClient', FakeWeatherClient)
+    monkeypatch.setattr('civicproof.api.routes.incidents.IncidentRepository', FakeIncidentRepository)
+    with TestClient(app) as client:
+        response = client.get('/v1/incidents/open311/stored-001/nearby?radius_meters=100&hours=24')
+    assert response.status_code == 200
+    incidents = response.json()
+    assert len(incidents) == 1
+    assert incidents[0]['external_id'] == 'stored-nearby'
+    assert incidents[0]['distance_meters'] == 42.5
+
+def test_fetch_cluster_returns_members_and_link_reason(monkeypatch) -> None:
+    monkeypatch.setattr('civicproof.main.EmbeddingClassifier', FakeEmbeddingClassifier)
+    monkeypatch.setattr('civicproof.main.NWSWeatherClient', FakeWeatherClient)
+    monkeypatch.setattr('civicproof.api.routes.clusters.IncidentClusterRepository', FakeIncidentClusterRepository)
+    with TestClient(app) as client:
+        response = client.get('/v1/clusters/1')
+    assert response.status_code == 200
+    cluster = response.json()
+    assert cluster['id'] == 1
+    assert cluster['report_count'] == 1
+    assert cluster['members'][0]['external_id'] == 'stored-001'
+    assert cluster['members'][0]['link_reason']['reason'] == 'cluster_anchor'
 
 def test_triage_returns_explainable_embedding_prediction(monkeypatch, caplog) -> None:
     monkeypatch.setattr('civicproof.main.EmbeddingClassifier', FakeEmbeddingClassifier)

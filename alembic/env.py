@@ -7,6 +7,8 @@ from civicproof.core.config import get_settings
 from civicproof.db.models.incident import Incident
 from civicproof.db.models.weather_alert import WeatherAlert
 from civicproof.db.models.ingestion_failure import IngestionFailure
+from civicproof.db.models.incident_cluster import IncidentCluster, IncidentClusterMember
+from civicproof.db.base import Base
 from alembic import context
 
 # this is the Alembic Config object, which provides
@@ -24,7 +26,12 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = Incident.metadata
+target_metadata = Base.metadata
+
+def include_object(object, name, type_, reflected, compare_to):
+    if type_ == 'table' and name == 'spatial_ref_sys':
+        return False
+    return True
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -50,6 +57,7 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        include_object=include_object,
     )
 
     with context.begin_transaction():
@@ -57,7 +65,11 @@ def run_migrations_offline() -> None:
 
 
 def do_run_migrations(connection: Connection) -> None:
-    context.configure(connection=connection, target_metadata=target_metadata)
+    context.configure(
+        connection=connection,
+        target_metadata=target_metadata,
+        include_object=include_object
+    )
 
     with context.begin_transaction():
         context.run_migrations()

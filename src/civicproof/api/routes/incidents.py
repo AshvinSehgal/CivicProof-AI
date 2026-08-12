@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Request, Depends, HTTPException, status
+from datetime import timedelta
+from fastapi import APIRouter, Request, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from civicproof.domain.incidents import IncidentCategory, Priority, IncidentReport, TriageDecision, IncidentRead, ReportSource
+from civicproof.domain.incidents import IncidentCategory, Priority, IncidentReport, TriageDecision, IncidentRead, NearbyIncidentRead, ReportSource
 from civicproof.services.triage import assign_priority, weather_risk
 from civicproof.db.session import get_database_session
 from civicproof.repositories.incidents import IncidentRepository
@@ -80,6 +81,34 @@ def triage_incident(report: IncidentReport, request: Request) -> TriageDecision:
         )
     )
     return decision
+
+@router.get("/{source}/{external_id}/nearby", response_model=list[NearbyIncidentRead])
+async def fetch_nearby_incidents(source: ReportSource, external_id: str, async_session: async_session_dep, radius_meters: float = Query(default=100.0, ge=1, le=5_000), hours: int = Query(default=24, ge=1, le=168), limit: int = Query(default=100, ge=1, le=100)):
+    incident_repository = IncidentRepository(async_session)
+    incident = await incident_repository.get_incident(source.value, external_id)
+    if incident is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Incident with source {source.value} and external_id {external_id} does not exist."
+        )
+    nearby_incidents = await incident_repository.find_nearby_incidents(
+        latitude=incident.latitude,
+        longitude=incident.longitude,
+        radius_meters=radius_meters,
+        since=incident.source_created_at - timedelta(hours=hours),
+        until=incident.source_created_at + timedelta(hours=hours),
+        category=incident.category,
+        exclude_incident_id=incident.id,
+        reference_embedding=incident.embedding,
+        limit=limit
+    )
+    return [
+        NearbyIncidentRead(
+            **IncidentRead.model_validate(nearby_incident).model_dump(),
+            distance_meters=distance_meters
+        )
+        for nearby_incident, distance_meters, semantic_similarity in nearby_incidents
+    ]
 
 @router.get("/{source}/{external_id}", response_model=IncidentRead)
 async def fetch_incident(source: ReportSource, external_id: str, async_session: async_session_dep):

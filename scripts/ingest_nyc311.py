@@ -8,6 +8,8 @@ from civicproof.repositories.incidents import IncidentRepository
 from civicproof.services.embedding_classifier import EmbeddingClassifier
 from civicproof.services.incident_ingestion import IncidentIngestionService
 from civicproof.repositories.ingestion_failures import IngestionFailureRepository
+from civicproof.repositories.incident_clusters import IncidentClusterRepository
+from civicproof.services.incident_linking import IncidentLinkingService
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DATA_PATH = PROJECT_ROOT / 'nyc311_sample.json'
@@ -20,7 +22,9 @@ async def ingest_nyc311(records = None):
         async with async_session() as session:
             repository = IncidentRepository(session)
             ingestion_failure_repository = IngestionFailureRepository(session)
-            service = IncidentIngestionService(repository, classifier, ingestion_failure_repository)
+            cluster_repository = IncidentClusterRepository(session)
+            linking_service = IncidentLinkingService(repository, cluster_repository)
+            service = IncidentIngestionService(repository, classifier, ingestion_failure_repository, linking_service)
             if records is None:
                 with open(DATA_PATH, 'r') as f:
                     records = json.load(f)

@@ -32,6 +32,31 @@ class IncidentRead(BaseModel):
     source_created_at: datetime
     ingested_at: datetime
     updated_at: datetime
+
+class NearbyIncidentRead(IncidentRead):
+    distance_meters: float = Field(ge=0)
+
+class IncidentClusterMemberRead(BaseModel):
+    incident_id: int
+    source: ReportSource
+    external_id: str
+    distance_meters: float = Field(ge=0)
+    link_score: float = Field(ge=0, le=1)
+    link_reason: dict = Field(default_factory=dict)
+    linked_at: datetime
+
+class IncidentClusterRead(BaseModel):
+    id: int
+    category: IncidentCategory
+    status: str
+    centroid_latitude: float
+    centroid_longitude: float
+    first_reported_at: datetime
+    last_reported_at: datetime
+    report_count: int
+    created_at: datetime
+    updated_at: datetime
+    members: list[IncidentClusterMemberRead] = Field(default_factory=list)
     
 class IncidentReport(BaseModel):
     source: ReportSource

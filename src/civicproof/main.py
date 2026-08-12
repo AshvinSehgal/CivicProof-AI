@@ -1,7 +1,7 @@
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from civicproof.api.routes import health, incidents
+from civicproof.api.routes import clusters, health, incidents
 from civicproof.core.config import get_settings
 from civicproof.services.embedding_classifier import EmbeddingClassifier
 from civicproof.core.logging import configure_logging
@@ -76,3 +76,4 @@ app = FastAPI(
 )
 app.include_router(health.router)
 app.include_router(incidents.router, prefix="/v1")
+app.include_router(clusters.router, prefix="/v1")

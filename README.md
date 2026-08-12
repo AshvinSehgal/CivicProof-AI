@@ -7,8 +7,9 @@ recommendations for human approval.
 
 ## Current milestone
 
-Milestone 0 establishes a small, testable FastAPI service and the domain
-contract used by later ingestion, retrieval, and LangGraph workflows.
+Milestone 2 adds PostGIS and pgvector-backed incident linking. NYC 311 reports
+are stored as geography points, retrieved by bounded distance and time windows,
+reranked by semantic similarity, and grouped into auditable incident clusters.
 
 ## Quick start
 
@@ -51,6 +52,25 @@ is a regression check rather than proof of real-world generalization. See
 deterministic baseline triage decision. This baseline is deliberately simple:
 future multimodal and agentic implementations must beat it in the evaluation
 harness rather than merely appear more sophisticated.
+
+Stored incidents and geospatial links can be inspected with:
+
+```text
+GET /v1/incidents/{source}/{external_id}
+GET /v1/incidents/{source}/{external_id}/nearby?radius_meters=100&hours=24
+GET /v1/clusters/{cluster_id}
+```
+
+Replaying `scripts/ingest_nyc311.py` populates missing embeddings and links
+existing incidents idempotently. See `docs/INCIDENT_LINKING.md` for the scoring
+contract and gold-pair evaluation format.
+
+After upgrading a database that already contains incidents, backfill and link
+the stored rows without requiring the original source JSON:
+
+```bash
+uv run python scripts/link_existing_incidents.py
+```
 
 The canonical MVP categories are `pothole`, `fallen_tree`, `flooding`,
 `road_obstruction`, and `unknown`. Their operational definitions and mapping

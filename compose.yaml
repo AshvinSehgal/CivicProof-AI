@@ -1,6 +1,9 @@
 services:
   postgres:
-    image: pgvector/pgvector:pg16
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
+    image: civicproof-postgres:pg16
     environment:
       POSTGRES_DB: civicproof
       POSTGRES_USER: civicproof

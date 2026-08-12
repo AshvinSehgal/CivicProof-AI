@@ -29,8 +29,8 @@ Exit criterion: replaying an ingestion window creates no duplicate records.
 
 ## Milestone 2 — Retrieval and incident linking
 
-- [ ] Enable PostGIS and pgvector extensions
-- [ ] Cluster reports by time, distance, and semantic similarity
+- [x] Enable PostGIS and pgvector extensions
+- [x] Cluster reports by time, distance, and semantic similarity
 - [ ] Index municipal SOP documents with hybrid retrieval
 - [ ] Add a reranker and citation-preserving context contract
 - [ ] Measure Recall@5 and nDCG@10 against labeled queries

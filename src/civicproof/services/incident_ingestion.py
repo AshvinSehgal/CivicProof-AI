@@ -1,14 +1,16 @@
 from datetime import datetime
 from zoneinfo import ZoneInfo
+from geoalchemy2.elements import WKTElement
 from civicproof.repositories.incidents import IncidentRepository
 from civicproof.repositories.ingestion_failures import IngestionFailureRepository
 from civicproof.services.embedding_classifier import EmbeddingClassifier
 
 class IncidentIngestionService:
-    def __init__(self, repository: IncidentRepository, classifier: EmbeddingClassifier, ingestion_failure_repository: IngestionFailureRepository):
+    def __init__(self, repository: IncidentRepository, classifier: EmbeddingClassifier, ingestion_failure_repository: IngestionFailureRepository, linking_service=None):
         self.repository = repository
         self.classifier = classifier
         self.ingestion_failure_repository = ingestion_failure_repository
+        self.linking_service = linking_service
     
     def required_text(self, record: dict, field_name: str) -> str:
         value = record.get(field_name)
@@ -58,6 +60,13 @@ class IncidentIngestionService:
             description = description.strip()
         prediction = self.classifier.predict(complaint_type, descriptor)
         category = prediction["category"]
+        embedding = None
+        if hasattr(self.classifier, 'encode_incident'):
+            embedding = self.classifier.encode_incident(
+                complaint_type,
+                descriptor,
+                description
+            )
         return {
             "source": "open311",
             "external_id": external_id,
@@ -66,6 +75,8 @@ class IncidentIngestionService:
             "description": description,
             "latitude": latitude,
             "longitude": longitude,
+            "location": WKTElement(f"POINT({longitude} {latitude})", srid=4326),
+            "embedding": embedding,
             "category": category,
             "source_created_at": source_created_at,
             "raw_payload": dict(raw_record)
@@ -95,8 +106,12 @@ class IncidentIngestionService:
                 "error_message": str(error)
             }
         incident = await self.repository.upsert_incident(incident_data)
-        return {
+        result = {
             "status": "upserted",
             "external_id": incident.external_id,
             "incident_id": incident.id
         }
+        if self.linking_service is not None:
+            cluster = await self.linking_service.link_incident(incident)
+            result['cluster_id'] = cluster.id
+        return result

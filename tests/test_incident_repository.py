@@ -4,9 +4,12 @@ import pytest_asyncio
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.pool import NullPool
+from geoalchemy2.elements import WKTElement
 from civicproof.core.config import get_settings
 from civicproof.db.models.incident import Incident
 from civicproof.repositories.incidents import IncidentRepository
+from civicproof.repositories.incident_clusters import IncidentClusterRepository
+from civicproof.services.incident_linking import IncidentLinkingService
 
 @pytest_asyncio.fixture
 async def database_session():
@@ -35,6 +38,8 @@ def create_incident_data(source='open311', external_id='repository-test-001'):
         'description': 'Large pothole in the roadway',
         'latitude': 40.7128,
         'longitude': -74.006,
+        'location': WKTElement('POINT(-74.006 40.7128)', srid=4326),
+        'embedding': None,
         'category': 'pothole',
         'source_created_at': datetime(2026, 8, 8, 12, 0, tzinfo=timezone.utc),
         'raw_payload': {
@@ -116,3 +121,54 @@ async def test_get_incident_returns_None_for_unknown(database_session):
         'does-not-exist'
     )
     assert incident is None
+
+@pytest.mark.asyncio
+async def test_find_nearby_incidents_uses_distance_time_and_category(database_session):
+    repository = IncidentRepository(database_session)
+    center_data = create_incident_data(external_id='nearby-center')
+    nearby_data = create_incident_data(external_id='nearby-match')
+    nearby_data['longitude'] = -74.0055
+    nearby_data['location'] = WKTElement('POINT(-74.0055 40.7128)', srid=4326)
+    different_category_data = create_incident_data(external_id='nearby-different-category')
+    different_category_data['category'] = 'flooding'
+    await repository.upsert_incident(center_data)
+    nearby_incident = await repository.upsert_incident(nearby_data)
+    await repository.upsert_incident(different_category_data)
+    nearby_incidents = await repository.find_nearby_incidents(
+        latitude=center_data['latitude'],
+        longitude=center_data['longitude'],
+        radius_meters=100,
+        since=datetime(2026, 8, 8, 11, 0, tzinfo=timezone.utc),
+        until=datetime(2026, 8, 8, 13, 0, tzinfo=timezone.utc),
+        category='pothole',
+        exclude_incident_id=(await repository.get_incident('open311', 'nearby-center')).id
+    )
+    assert len(nearby_incidents) == 1
+    assert nearby_incidents[0][0].id == nearby_incident.id
+    assert 0 < nearby_incidents[0][1] < 100
+    assert nearby_incidents[0][2] is None
+
+@pytest.mark.asyncio
+async def test_linking_nearby_semantically_similar_incidents_creates_one_cluster(database_session):
+    incident_repository = IncidentRepository(database_session)
+    cluster_repository = IncidentClusterRepository(database_session)
+    linking_service = IncidentLinkingService(incident_repository, cluster_repository)
+    first_data = create_incident_data(external_id='cluster-first')
+    first_data['embedding'] = [1.0] + [0.0] * 383
+    first_incident = await incident_repository.upsert_incident(first_data)
+    first_cluster = await linking_service.link_incident(first_incident)
+    second_data = create_incident_data(external_id='cluster-second')
+    second_data['longitude'] = -74.0058
+    second_data['location'] = WKTElement('POINT(-74.0058 40.7128)', srid=4326)
+    second_data['embedding'] = [1.0] + [0.0] * 383
+    second_incident = await incident_repository.upsert_incident(second_data)
+    second_cluster = await linking_service.link_incident(second_incident)
+    cluster_details = await cluster_repository.get_cluster_details(first_cluster.id)
+    assert second_cluster.id == first_cluster.id
+    assert second_cluster.report_count == 2
+    assert cluster_details is not None
+    assert len(cluster_details['members']) == 2
+    second_membership = await cluster_repository.get_membership(second_incident.id)
+    assert second_membership is not None
+    assert second_membership.link_score >= 0.55
+    assert second_membership.link_reason['semantic_similarity'] == pytest.approx(1.0)
