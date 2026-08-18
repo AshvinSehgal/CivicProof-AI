@@ -1,0 +1,364 @@
+[
+  {
+    "cluster_id": 141,
+    "decision": "correct",
+    "event_groups": [
+      [
+        583,
+        161
+      ]
+    ],
+    "excluded_incidents": [],
+    "notes": "Same blocked-driveway condition at identical coordinates within 56 minutes."
+  },
+  {
+    "cluster_id": 266,
+    "decision": "incorrect",
+    "event_groups": [
+      [
+        785
+      ],
+      [
+        448
+      ],
+      [
+        1053
+      ]
+    ],
+    "excluded_incidents": [],
+    "notes": "Pests, ventilation, and a street cave-in are unrelated complaints merged by the unknown category."
+  },
+  {
+    "cluster_id": 369,
+    "decision": "mostly_correct",
+    "event_groups": [
+      [
+        343,
+        350,
+        438,
+        435,
+        293
+      ]
+    ],
+    "excluded_incidents": [
+      605
+    ],
+    "notes": "Five reports describe the same loud party. The vehicle-music report is plausible but not provable from the sparse payload."
+  },
+  {
+    "cluster_id": 838,
+    "decision": "mixed",
+    "event_groups": [
+      [
+        756
+      ],
+      [
+        1406,
+        1404
+      ]
+    ],
+    "excluded_incidents": [],
+    "notes": "Two reports share an exact catch-basin location and two-hour window. The earlier report is 32 metres and 22 hours away."
+  },
+  {
+    "cluster_id": 842,
+    "decision": "correct",
+    "event_groups": [
+      [
+        1219,
+        3135
+      ]
+    ],
+    "excluded_incidents": [],
+    "notes": "Persistent pothole reported at identical coordinates about 60 hours apart."
+  },
+  {
+    "cluster_id": 855,
+    "decision": "correct",
+    "event_groups": [
+      [
+        990,
+        1408,
+        1388
+      ]
+    ],
+    "excluded_incidents": [],
+    "notes": "Construction blockage at identical coordinates over one continuous day."
+  },
+  {
+    "cluster_id": 908,
+    "decision": "correct",
+    "event_groups": [
+      [
+        768,
+        845,
+        3115
+      ]
+    ],
+    "excluded_incidents": [],
+    "notes": "Persistent pothole at identical coordinates, including two reports within 30 minutes."
+  },
+  {
+    "cluster_id": 916,
+    "decision": "ambiguous",
+    "event_groups": [],
+    "excluded_incidents": [
+      1286,
+      1256
+    ],
+    "notes": "Reports are simultaneous but 22 metres apart; the source contains no address or narrative identifying one pothole."
+  },
+  {
+    "cluster_id": 1052,
+    "decision": "correct",
+    "event_groups": [
+      [
+        1331,
+        3599
+      ]
+    ],
+    "excluded_incidents": [],
+    "notes": "Persistent pothole at identical coordinates within the configured 72-hour window."
+  },
+  {
+    "cluster_id": 1219,
+    "decision": "correct",
+    "event_groups": [
+      [
+        3082,
+        3186
+      ]
+    ],
+    "excluded_incidents": [],
+    "notes": "Construction blockage at identical coordinates over one continuous day."
+  },
+  {
+    "cluster_id": 1259,
+    "decision": "mixed",
+    "event_groups": [
+      [
+        3121,
+        3099
+      ],
+      [
+        3036
+      ]
+    ],
+    "excluded_incidents": [],
+    "notes": "First two cave-ins are five metres and 28 minutes apart. The third is 41 metres away and is treated as a separate road defect."
+  },
+  {
+    "cluster_id": 1337,
+    "decision": "incorrect",
+    "event_groups": [
+      [
+        3183
+      ],
+      [
+        3182
+      ],
+      [
+        3204
+      ]
+    ],
+    "excluded_incidents": [],
+    "notes": "Three separate catch-basin locations spanning 90 to 184 metres were merged because their generic descriptions match."
+  },
+  {
+    "cluster_id": 1508,
+    "decision": "incorrect",
+    "event_groups": [
+      [
+        3488
+      ],
+      [
+        3548
+      ],
+      [
+        3445
+      ]
+    ],
+    "excluded_incidents": [],
+    "notes": "Separate catch-basin locations more than 220 metres apart should remain independent work items."
+  },
+  {
+    "cluster_id": 1606,
+    "decision": "correct",
+    "event_groups": [
+      [
+        3342,
+        3341,
+        3461,
+        3500
+      ]
+    ],
+    "excluded_incidents": [],
+    "notes": "Four catch-basin reports share the same point or are within 13 metres during a three-hour window."
+  },
+  {
+    "cluster_id": 1621,
+    "decision": "incorrect",
+    "event_groups": [
+      [
+        3414
+      ],
+      [
+        3375
+      ],
+      [
+        3440
+      ]
+    ],
+    "excluded_incidents": [],
+    "notes": "Separate catch-basin locations 227 to 251 metres apart were merged by identical generic descriptors."
+  },
+  {
+    "cluster_id": 2033,
+    "decision": "incorrect",
+    "event_groups": [
+      [
+        3884
+      ],
+      [
+        4248
+      ]
+    ],
+    "excluded_incidents": [],
+    "notes": "Construction reports are 58 metres and almost 18 hours apart with no shared address evidence."
+  },
+  {
+    "cluster_id": 2180,
+    "decision": "mostly_correct",
+    "event_groups": [
+      [
+        4294,
+        4118,
+        4285
+      ]
+    ],
+    "excluded_incidents": [
+      4320
+    ],
+    "notes": "Three cave-in reports share exact coordinates. A fourth report 19 metres away is plausible but not provable."
+  },
+  {
+    "cluster_id": 2259,
+    "decision": "correct",
+    "event_groups": [
+      [
+        4514,
+        4450
+      ]
+    ],
+    "excluded_incidents": [],
+    "notes": "Same overgrown branches blocking the street at identical coordinates within 44 minutes."
+  },
+  {
+    "cluster_id": 2369,
+    "decision": "correct",
+    "event_groups": [
+      [
+        4158,
+        4240,
+        4273,
+        4309
+      ]
+    ],
+    "excluded_incidents": [],
+    "notes": "Four pothole records have identical coordinates and timestamps and are clear duplicate submissions."
+  },
+  {
+    "cluster_id": 2376,
+    "decision": "mostly_correct",
+    "event_groups": [
+      [
+        4236,
+        4269,
+        4186,
+        4219
+      ]
+    ],
+    "excluded_incidents": [
+      4290
+    ],
+    "notes": "Four cave-in reports are at the same point within four hours. The fifth is 32 metres away and remains ambiguous."
+  },
+  {
+    "cluster_id": 2386,
+    "decision": "mostly_correct",
+    "event_groups": [
+      [
+        4567,
+        4501,
+        4497
+      ]
+    ],
+    "excluded_incidents": [
+      5025
+    ],
+    "notes": "Three fallen-limb reports are within 19 metres and two hours. A report the following day is not confidently the same limb."
+  },
+  {
+    "cluster_id": 2559,
+    "decision": "mixed",
+    "event_groups": [
+      [
+        4727,
+        4908,
+        4909
+      ],
+      [
+        4845
+      ]
+    ],
+    "excluded_incidents": [],
+    "notes": "Three fallen-tree reports are within six metres. The fourth is 84 metres away and is a different tree."
+  },
+  {
+    "cluster_id": 2563,
+    "decision": "mixed",
+    "event_groups": [
+      [
+        4721,
+        4667,
+        4670
+      ],
+      [
+        4944
+      ]
+    ],
+    "excluded_incidents": [],
+    "notes": "Three fallen-limb reports share exact coordinates. An entire-tree report 66 metres away is a separate tree."
+  },
+  {
+    "cluster_id": 2568,
+    "decision": "mixed",
+    "event_groups": [
+      [
+        4609,
+        4895,
+        4906,
+        4649
+      ],
+      [
+        4962
+      ]
+    ],
+    "excluded_incidents": [],
+    "notes": "Four tree reports are at one point or within 12 metres. A fallen limb 85 metres away is a separate tree."
+  },
+  {
+    "cluster_id": 2657,
+    "decision": "correct",
+    "event_groups": [
+      [
+        4720,
+        4725,
+        4657,
+        5024
+      ]
+    ],
+    "excluded_incidents": [],
+    "notes": "Four reports describe a damaged tree at the same point or within five metres on the same day."
+  }
+]
