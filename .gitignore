@@ -36,3 +36,10 @@ artifacts/models/baseline/validation_pred.json
 artifacts/models/bge-small-v1/validation_pred.json
 artifacts/models/bge-small-v1-final/test_pred.json
 artifacts/models/qwen3-embedding-0.6b-v1/validation_pred.json
+cluster_review.txt
+artifacts/evaluation/incident_linking_tuning_errors.json
+artifacts/evaluation/incident_linking_tuning_metrics.json
+data/incident_linking_calibration.json
+data/incident_linking_split_manifest.json
+data/incident_linking_test.json
+cluster_review.txt
