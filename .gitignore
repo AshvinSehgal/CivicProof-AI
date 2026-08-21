@@ -43,3 +43,6 @@ data/incident_linking_calibration.json
 data/incident_linking_split_manifest.json
 data/incident_linking_test.json
 cluster_review.txt
+artifacts/evaluation/incident_linking_errors.json
+artifacts/evaluation/incident_linking_test_errors_v1.json
+artifacts/evaluation/incident_linking_test_metrics.json

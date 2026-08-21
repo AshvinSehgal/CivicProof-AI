@@ -170,5 +170,5 @@ async def test_linking_nearby_semantically_similar_incidents_creates_one_cluster
     assert len(cluster_details['members']) == 2
     second_membership = await cluster_repository.get_membership(second_incident.id)
     assert second_membership is not None
-    assert second_membership.link_score >= 0.55
+    assert second_membership.link_score >= 0.7
     assert second_membership.link_reason['semantic_similarity'] == pytest.approx(1.0)

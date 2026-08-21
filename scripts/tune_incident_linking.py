@@ -2,8 +2,8 @@ import argparse
 from pathlib import Path
 import json
 import itertools
-from evaluate_incident_linking import predict_pair, calculate_metrics
-from civicproof.services.incident_linking import LINKING_RULES
+from evaluate_incident_linking import predict_pair, calculate_metrics, calculate_review_metrics
+from civicproof.core.incident_linking_config import LINKING_RULES
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DATA_PATH = PROJECT_ROOT / 'data' / 'incident_linking_calibration.json'
@@ -11,11 +11,13 @@ DEFAULT_METRICS_PATH = PROJECT_ROOT / 'artifacts' / 'evaluation' / 'incident_lin
 DEFAULT_ERRORS_PATH = PROJECT_ROOT / 'artifacts' / 'evaluation' / 'incident_linking_tuning_errors.json'
 
 THRESHOLDS = [0.55, 0.60, 0.65, 0.70, 0.75]
+REVIEW_THRESHOLDS = [0.55, 0.60, 0.65]
 SEMANTIC_WEIGHTS = [0.00, 0.10, 0.20]
 SPATIAL_WEIGHTS = [0.40, 0.50, 0.60]
 
 PRECISION_THRESHOLD = 0.9
 FALSE_MERGE_RATE_THRESHOLD = 0.1
+HUMAN_REVIEW_RATE_THRESHOLD = 0.2
 
 def tune_incident_linking(records, data_path, metrics_path, errors_path):
     model_name = 'hybrid_semantic'
@@ -23,12 +25,15 @@ def tune_incident_linking(records, data_path, metrics_path, errors_path):
     categories = sorted({record['category'] for record in records})
     tuning_results = []
     eligible_results = []
-    for (threshold, semantic_weight, spatial_weight) in itertools.product(THRESHOLDS, SEMANTIC_WEIGHTS, SPATIAL_WEIGHTS):
+    for (threshold, review_threshold, semantic_weight, spatial_weight) in itertools.product(THRESHOLDS, REVIEW_THRESHOLDS, SEMANTIC_WEIGHTS, SPATIAL_WEIGHTS):
+        if review_threshold >= threshold:
+            continue
         temporal_weight = round(1 - semantic_weight - spatial_weight, 2)
         if temporal_weight <= 0:
             continue
         linking_config = {
             'threshold': threshold,
+            'review_threshold': review_threshold,
             'spatial_weight': spatial_weight,
             'semantic_weight': semantic_weight,
             'temporal_weight': temporal_weight,
@@ -37,6 +42,7 @@ def tune_incident_linking(records, data_path, metrics_path, errors_path):
         }
         metrics = {
             'threshold': threshold,
+            'review_threshold': review_threshold,
             'spatial_weight': spatial_weight,
             'semantic_weight': semantic_weight,
             'temporal_weight': temporal_weight
@@ -44,23 +50,28 @@ def tune_incident_linking(records, data_path, metrics_path, errors_path):
         prediction_results = [predict_pair(record, model_name, linking_config) for record in records]
         predictions = [prediction_result['prediction'] for prediction_result in prediction_results]
         result_metrics = calculate_metrics(labels, predictions)
+        result_metrics.update(calculate_review_metrics(labels, prediction_results))
         metrics['overall'] = result_metrics
         metrics['by_category'] = {}
         for category in categories:
-            category_labels = [labels[index] for index in range(len(records)) if records[index]['category'] == category]
-            category_predictions = [predictions[index] for index in range(len(records)) if records[index]['category'] == category]
+            category_indexes = [index for index in range(len(records)) if records[index]['category'] == category]
+            category_labels = [labels[index] for index in category_indexes]
+            category_predictions = [predictions[index] for index in category_indexes]
+            category_prediction_results = [prediction_results[index] for index in category_indexes]
             metrics['by_category'][category] = calculate_metrics(category_labels, category_predictions)
+            metrics['by_category'][category].update(calculate_review_metrics(category_labels, category_prediction_results))
         metrics['macro_category_f1'] = sum(metrics['by_category'][category]['f1'] for category in categories) / len(categories)
         metrics['worst_category_recall'] = min(metrics['by_category'][category]['recall'] for category in categories)
-        metrics['eligible'] = result_metrics['precision'] >= PRECISION_THRESHOLD and result_metrics['false_merge_rate'] <= FALSE_MERGE_RATE_THRESHOLD
+        metrics['eligible'] = result_metrics['precision'] >= PRECISION_THRESHOLD and result_metrics['false_merge_rate'] <= FALSE_MERGE_RATE_THRESHOLD and result_metrics['human_review_rate'] <= HUMAN_REVIEW_RATE_THRESHOLD
         tuning_results.append(metrics)
-        if result_metrics['precision'] >= PRECISION_THRESHOLD and result_metrics['false_merge_rate'] <= FALSE_MERGE_RATE_THRESHOLD:
+        if metrics['eligible']:
             eligible_results.append(metrics)
     if len(eligible_results) == 0:
         raise ValueError('No tuning configuration met the model-selection constraints')
-    best_result = max(eligible_results, key=lambda result: (result['overall']['recall'], result['macro_category_f1'], result['overall']['precision'], result['overall']['f1']))
+    best_result = max(eligible_results, key=lambda result: (result['overall']['recall'], result['macro_category_f1'], result['overall']['precision'], result['overall']['human_review_same_event_count'], -result['overall']['human_review_count'], result['overall']['f1']))
     best_config = {
         'threshold': best_result['threshold'],
+        'review_threshold': best_result['review_threshold'],
         'spatial_weight': best_result['spatial_weight'],
         'semantic_weight': best_result['semantic_weight'],
         'temporal_weight': best_result['temporal_weight'],
@@ -70,10 +81,24 @@ def tune_incident_linking(records, data_path, metrics_path, errors_path):
     best_prediction_results = [predict_pair(record, model_name, best_config) for record in records]
     best_predictions = [prediction_result['prediction'] for prediction_result in best_prediction_results]
     model_errors = []
+    human_review_cases = []
     for index in range(len(records)):
-        if best_predictions[index] != labels[index]:
-            record = records[index]
-            prediction_result = best_prediction_results[index]
+        record = records[index]
+        prediction_result = best_prediction_results[index]
+        if prediction_result['decision'] == 'human_review':
+            human_review_cases.append({
+                'incident_a': record['incident_a'],
+                'incident_b': record['incident_b'],
+                'category': record['category'],
+                'expected': labels[index],
+                'score': prediction_result['score'],
+                'decision': prediction_result['decision'],
+                'distance_meters': record['distance_meters'],
+                'time_difference_seconds': record['time_difference_seconds'],
+                'semantic_similarity': record.get('semantic_similarity'),
+                'review_rationale': record.get('review_rationale')
+            })
+        if prediction_result['decision'] != 'human_review' and best_predictions[index] != labels[index]:
             model_errors.append({
                 'incident_a': record['incident_a'],
                 'incident_b': record['incident_b'],
@@ -82,6 +107,7 @@ def tune_incident_linking(records, data_path, metrics_path, errors_path):
                 'predicted': best_predictions[index],
                 'error_type': 'false_positive' if best_predictions[index] else 'false_negative',
                 'score': prediction_result['score'],
+                'decision': prediction_result['decision'],
                 'distance_meters': record['distance_meters'],
                 'time_difference_seconds': record['time_difference_seconds'],
                 'semantic_similarity': record.get('semantic_similarity'),
@@ -95,10 +121,13 @@ def tune_incident_linking(records, data_path, metrics_path, errors_path):
         'selection_objective': {
             'minimum_precision': PRECISION_THRESHOLD,
             'maximum_false_merge_rate': FALSE_MERGE_RATE_THRESHOLD,
+            'maximum_human_review_rate': HUMAN_REVIEW_RATE_THRESHOLD,
             'optimize': 'recall',
             'first_tie_breaker': 'macro_category_f1',
             'second_tie_breaker': 'precision',
-            'third_tie_breaker': 'f1'
+            'third_tie_breaker': 'human_review_same_event_count',
+            'fourth_tie_breaker': 'lower_human_review_count',
+            'fifth_tie_breaker': 'f1'
         },
         'configuration_count': len(tuning_results),
         'eligible_configuration_count': len(eligible_results),
@@ -114,7 +143,9 @@ def tune_incident_linking(records, data_path, metrics_path, errors_path):
             'data_file': data_path.name,
             'best_configuration': best_config,
             'error_count': len(model_errors),
-            'errors': model_errors
+            'errors': model_errors,
+            'human_review_count': len(human_review_cases),
+            'human_review_cases': human_review_cases
         }, f, indent=2)
     print(json.dumps(tuning_metrics['best_configuration'], indent=2))
     print('Tuning metrics:', metrics_path)

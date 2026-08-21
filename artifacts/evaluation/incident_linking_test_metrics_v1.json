@@ -1,0 +1,745 @@
+{
+  "config_version": "v1",
+  "auto_link_threshold": 0.7,
+  "review_threshold": 0.65,
+  "models": {
+    "distance_only": {
+      "overall": {
+        "accuracy": 0.8,
+        "precision": 0.7037037037037037,
+        "recall": 1.0,
+        "f1": 0.8260869565217391,
+        "confusion_matrix": [
+          [
+            13,
+            8
+          ],
+          [
+            0,
+            19
+          ]
+        ],
+        "true_positive": 19,
+        "false_positive": 8,
+        "true_negative": 13,
+        "false_negative": 0,
+        "predicted_positive_count": 27,
+        "false_merge_rate": 0.2962962962962963,
+        "record_count": 40,
+        "auto_link_count": 27,
+        "human_review_count": 0,
+        "no_link_count": 13,
+        "human_review_rate": 0.0,
+        "automatic_decision_rate": 1.0,
+        "human_review_same_event_count": 0,
+        "human_review_different_event_count": 0
+      },
+      "by_category": {
+        "fallen_tree": {
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "confusion_matrix": [
+            [
+              4,
+              0
+            ],
+            [
+              0,
+              8
+            ]
+          ],
+          "true_positive": 8,
+          "false_positive": 0,
+          "true_negative": 4,
+          "false_negative": 0,
+          "predicted_positive_count": 8,
+          "false_merge_rate": 0.0,
+          "record_count": 12,
+          "auto_link_count": 8,
+          "human_review_count": 0,
+          "no_link_count": 4,
+          "human_review_rate": 0.0,
+          "automatic_decision_rate": 1.0,
+          "human_review_same_event_count": 0,
+          "human_review_different_event_count": 0
+        },
+        "flooding": {
+          "accuracy": 0.75,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "confusion_matrix": [
+            [
+              3,
+              1
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "true_positive": 0,
+          "false_positive": 1,
+          "true_negative": 3,
+          "false_negative": 0,
+          "predicted_positive_count": 1,
+          "false_merge_rate": 1.0,
+          "record_count": 4,
+          "auto_link_count": 1,
+          "human_review_count": 0,
+          "no_link_count": 3,
+          "human_review_rate": 0.0,
+          "automatic_decision_rate": 1.0,
+          "human_review_same_event_count": 0,
+          "human_review_different_event_count": 0
+        },
+        "pothole": {
+          "accuracy": 0.7142857142857143,
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6666666666666666,
+          "confusion_matrix": [
+            [
+              3,
+              2
+            ],
+            [
+              0,
+              2
+            ]
+          ],
+          "true_positive": 2,
+          "false_positive": 2,
+          "true_negative": 3,
+          "false_negative": 0,
+          "predicted_positive_count": 4,
+          "false_merge_rate": 0.5,
+          "record_count": 7,
+          "auto_link_count": 4,
+          "human_review_count": 0,
+          "no_link_count": 3,
+          "human_review_rate": 0.0,
+          "automatic_decision_rate": 1.0,
+          "human_review_same_event_count": 0,
+          "human_review_different_event_count": 0
+        },
+        "road_obstruction": {
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "confusion_matrix": [
+            [
+              3,
+              0
+            ],
+            [
+              0,
+              3
+            ]
+          ],
+          "true_positive": 3,
+          "false_positive": 0,
+          "true_negative": 3,
+          "false_negative": 0,
+          "predicted_positive_count": 3,
+          "false_merge_rate": 0.0,
+          "record_count": 6,
+          "auto_link_count": 3,
+          "human_review_count": 0,
+          "no_link_count": 3,
+          "human_review_rate": 0.0,
+          "automatic_decision_rate": 1.0,
+          "human_review_same_event_count": 0,
+          "human_review_different_event_count": 0
+        },
+        "unknown": {
+          "accuracy": 0.5454545454545454,
+          "precision": 0.5454545454545454,
+          "recall": 1.0,
+          "f1": 0.7058823529411765,
+          "confusion_matrix": [
+            [
+              0,
+              5
+            ],
+            [
+              0,
+              6
+            ]
+          ],
+          "true_positive": 6,
+          "false_positive": 5,
+          "true_negative": 0,
+          "false_negative": 0,
+          "predicted_positive_count": 11,
+          "false_merge_rate": 0.45454545454545453,
+          "record_count": 11,
+          "auto_link_count": 11,
+          "human_review_count": 0,
+          "no_link_count": 0,
+          "human_review_rate": 0.0,
+          "automatic_decision_rate": 1.0,
+          "human_review_same_event_count": 0,
+          "human_review_different_event_count": 0
+        }
+      }
+    },
+    "distance_time": {
+      "overall": {
+        "accuracy": 0.75,
+        "precision": 0.6956521739130435,
+        "recall": 0.8421052631578947,
+        "f1": 0.7619047619047619,
+        "confusion_matrix": [
+          [
+            14,
+            7
+          ],
+          [
+            3,
+            16
+          ]
+        ],
+        "true_positive": 16,
+        "false_positive": 7,
+        "true_negative": 14,
+        "false_negative": 3,
+        "predicted_positive_count": 23,
+        "false_merge_rate": 0.30434782608695654,
+        "record_count": 40,
+        "auto_link_count": 23,
+        "human_review_count": 1,
+        "no_link_count": 16,
+        "human_review_rate": 0.025,
+        "automatic_decision_rate": 0.975,
+        "human_review_same_event_count": 1,
+        "human_review_different_event_count": 0
+      },
+      "by_category": {
+        "fallen_tree": {
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "confusion_matrix": [
+            [
+              4,
+              0
+            ],
+            [
+              0,
+              8
+            ]
+          ],
+          "true_positive": 8,
+          "false_positive": 0,
+          "true_negative": 4,
+          "false_negative": 0,
+          "predicted_positive_count": 8,
+          "false_merge_rate": 0.0,
+          "record_count": 12,
+          "auto_link_count": 8,
+          "human_review_count": 0,
+          "no_link_count": 4,
+          "human_review_rate": 0.0,
+          "automatic_decision_rate": 1.0,
+          "human_review_same_event_count": 0,
+          "human_review_different_event_count": 0
+        },
+        "flooding": {
+          "accuracy": 1.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "confusion_matrix": [
+            [
+              4,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "true_positive": 0,
+          "false_positive": 0,
+          "true_negative": 4,
+          "false_negative": 0,
+          "predicted_positive_count": 0,
+          "false_merge_rate": 0.0,
+          "record_count": 4,
+          "auto_link_count": 0,
+          "human_review_count": 0,
+          "no_link_count": 4,
+          "human_review_rate": 0.0,
+          "automatic_decision_rate": 1.0,
+          "human_review_same_event_count": 0,
+          "human_review_different_event_count": 0
+        },
+        "pothole": {
+          "accuracy": 0.42857142857142855,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "confusion_matrix": [
+            [
+              3,
+              2
+            ],
+            [
+              2,
+              0
+            ]
+          ],
+          "true_positive": 0,
+          "false_positive": 2,
+          "true_negative": 3,
+          "false_negative": 2,
+          "predicted_positive_count": 2,
+          "false_merge_rate": 1.0,
+          "record_count": 7,
+          "auto_link_count": 2,
+          "human_review_count": 1,
+          "no_link_count": 4,
+          "human_review_rate": 0.14285714285714285,
+          "automatic_decision_rate": 0.8571428571428571,
+          "human_review_same_event_count": 1,
+          "human_review_different_event_count": 0
+        },
+        "road_obstruction": {
+          "accuracy": 0.8333333333333334,
+          "precision": 1.0,
+          "recall": 0.6666666666666666,
+          "f1": 0.8,
+          "confusion_matrix": [
+            [
+              3,
+              0
+            ],
+            [
+              1,
+              2
+            ]
+          ],
+          "true_positive": 2,
+          "false_positive": 0,
+          "true_negative": 3,
+          "false_negative": 1,
+          "predicted_positive_count": 2,
+          "false_merge_rate": 0.0,
+          "record_count": 6,
+          "auto_link_count": 2,
+          "human_review_count": 0,
+          "no_link_count": 4,
+          "human_review_rate": 0.0,
+          "automatic_decision_rate": 1.0,
+          "human_review_same_event_count": 0,
+          "human_review_different_event_count": 0
+        },
+        "unknown": {
+          "accuracy": 0.5454545454545454,
+          "precision": 0.5454545454545454,
+          "recall": 1.0,
+          "f1": 0.7058823529411765,
+          "confusion_matrix": [
+            [
+              0,
+              5
+            ],
+            [
+              0,
+              6
+            ]
+          ],
+          "true_positive": 6,
+          "false_positive": 5,
+          "true_negative": 0,
+          "false_negative": 0,
+          "predicted_positive_count": 11,
+          "false_merge_rate": 0.45454545454545453,
+          "record_count": 11,
+          "auto_link_count": 11,
+          "human_review_count": 0,
+          "no_link_count": 0,
+          "human_review_rate": 0.0,
+          "automatic_decision_rate": 1.0,
+          "human_review_same_event_count": 0,
+          "human_review_different_event_count": 0
+        }
+      }
+    },
+    "distance_time_category": {
+      "overall": {
+        "accuracy": 0.75,
+        "precision": 0.8,
+        "recall": 0.631578947368421,
+        "f1": 0.7058823529411765,
+        "confusion_matrix": [
+          [
+            18,
+            3
+          ],
+          [
+            7,
+            12
+          ]
+        ],
+        "true_positive": 12,
+        "false_positive": 3,
+        "true_negative": 18,
+        "false_negative": 7,
+        "predicted_positive_count": 15,
+        "false_merge_rate": 0.2,
+        "record_count": 40,
+        "auto_link_count": 15,
+        "human_review_count": 1,
+        "no_link_count": 24,
+        "human_review_rate": 0.025,
+        "automatic_decision_rate": 0.975,
+        "human_review_same_event_count": 1,
+        "human_review_different_event_count": 0
+      },
+      "by_category": {
+        "fallen_tree": {
+          "accuracy": 0.9166666666666666,
+          "precision": 1.0,
+          "recall": 0.875,
+          "f1": 0.9333333333333333,
+          "confusion_matrix": [
+            [
+              4,
+              0
+            ],
+            [
+              1,
+              7
+            ]
+          ],
+          "true_positive": 7,
+          "false_positive": 0,
+          "true_negative": 4,
+          "false_negative": 1,
+          "predicted_positive_count": 7,
+          "false_merge_rate": 0.0,
+          "record_count": 12,
+          "auto_link_count": 7,
+          "human_review_count": 0,
+          "no_link_count": 5,
+          "human_review_rate": 0.0,
+          "automatic_decision_rate": 1.0,
+          "human_review_same_event_count": 0,
+          "human_review_different_event_count": 0
+        },
+        "flooding": {
+          "accuracy": 1.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "confusion_matrix": [
+            [
+              4,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "true_positive": 0,
+          "false_positive": 0,
+          "true_negative": 4,
+          "false_negative": 0,
+          "predicted_positive_count": 0,
+          "false_merge_rate": 0.0,
+          "record_count": 4,
+          "auto_link_count": 0,
+          "human_review_count": 0,
+          "no_link_count": 4,
+          "human_review_rate": 0.0,
+          "automatic_decision_rate": 1.0,
+          "human_review_same_event_count": 0,
+          "human_review_different_event_count": 0
+        },
+        "pothole": {
+          "accuracy": 0.7142857142857143,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "confusion_matrix": [
+            [
+              5,
+              0
+            ],
+            [
+              2,
+              0
+            ]
+          ],
+          "true_positive": 0,
+          "false_positive": 0,
+          "true_negative": 5,
+          "false_negative": 2,
+          "predicted_positive_count": 0,
+          "false_merge_rate": 0.0,
+          "record_count": 7,
+          "auto_link_count": 0,
+          "human_review_count": 1,
+          "no_link_count": 6,
+          "human_review_rate": 0.14285714285714285,
+          "automatic_decision_rate": 0.8571428571428571,
+          "human_review_same_event_count": 1,
+          "human_review_different_event_count": 0
+        },
+        "road_obstruction": {
+          "accuracy": 0.8333333333333334,
+          "precision": 1.0,
+          "recall": 0.6666666666666666,
+          "f1": 0.8,
+          "confusion_matrix": [
+            [
+              3,
+              0
+            ],
+            [
+              1,
+              2
+            ]
+          ],
+          "true_positive": 2,
+          "false_positive": 0,
+          "true_negative": 3,
+          "false_negative": 1,
+          "predicted_positive_count": 2,
+          "false_merge_rate": 0.0,
+          "record_count": 6,
+          "auto_link_count": 2,
+          "human_review_count": 0,
+          "no_link_count": 4,
+          "human_review_rate": 0.0,
+          "automatic_decision_rate": 1.0,
+          "human_review_same_event_count": 0,
+          "human_review_different_event_count": 0
+        },
+        "unknown": {
+          "accuracy": 0.45454545454545453,
+          "precision": 0.5,
+          "recall": 0.5,
+          "f1": 0.5,
+          "confusion_matrix": [
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              3
+            ]
+          ],
+          "true_positive": 3,
+          "false_positive": 3,
+          "true_negative": 2,
+          "false_negative": 3,
+          "predicted_positive_count": 6,
+          "false_merge_rate": 0.5,
+          "record_count": 11,
+          "auto_link_count": 6,
+          "human_review_count": 0,
+          "no_link_count": 5,
+          "human_review_rate": 0.0,
+          "automatic_decision_rate": 1.0,
+          "human_review_same_event_count": 0,
+          "human_review_different_event_count": 0
+        }
+      }
+    },
+    "hybrid_semantic": {
+      "overall": {
+        "accuracy": 0.825,
+        "precision": 0.8333333333333334,
+        "recall": 0.7894736842105263,
+        "f1": 0.8108108108108109,
+        "confusion_matrix": [
+          [
+            18,
+            3
+          ],
+          [
+            4,
+            15
+          ]
+        ],
+        "true_positive": 15,
+        "false_positive": 3,
+        "true_negative": 18,
+        "false_negative": 4,
+        "predicted_positive_count": 18,
+        "false_merge_rate": 0.16666666666666666,
+        "record_count": 40,
+        "auto_link_count": 18,
+        "human_review_count": 0,
+        "no_link_count": 22,
+        "human_review_rate": 0.0,
+        "automatic_decision_rate": 1.0,
+        "human_review_same_event_count": 0,
+        "human_review_different_event_count": 0
+      },
+      "by_category": {
+        "fallen_tree": {
+          "accuracy": 0.9166666666666666,
+          "precision": 1.0,
+          "recall": 0.875,
+          "f1": 0.9333333333333333,
+          "confusion_matrix": [
+            [
+              4,
+              0
+            ],
+            [
+              1,
+              7
+            ]
+          ],
+          "true_positive": 7,
+          "false_positive": 0,
+          "true_negative": 4,
+          "false_negative": 1,
+          "predicted_positive_count": 7,
+          "false_merge_rate": 0.0,
+          "record_count": 12,
+          "auto_link_count": 7,
+          "human_review_count": 0,
+          "no_link_count": 5,
+          "human_review_rate": 0.0,
+          "automatic_decision_rate": 1.0,
+          "human_review_same_event_count": 0,
+          "human_review_different_event_count": 0
+        },
+        "flooding": {
+          "accuracy": 1.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "confusion_matrix": [
+            [
+              4,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "true_positive": 0,
+          "false_positive": 0,
+          "true_negative": 4,
+          "false_negative": 0,
+          "predicted_positive_count": 0,
+          "false_merge_rate": 0.0,
+          "record_count": 4,
+          "auto_link_count": 0,
+          "human_review_count": 0,
+          "no_link_count": 4,
+          "human_review_rate": 0.0,
+          "automatic_decision_rate": 1.0,
+          "human_review_same_event_count": 0,
+          "human_review_different_event_count": 0
+        },
+        "pothole": {
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "confusion_matrix": [
+            [
+              5,
+              0
+            ],
+            [
+              0,
+              2
+            ]
+          ],
+          "true_positive": 2,
+          "false_positive": 0,
+          "true_negative": 5,
+          "false_negative": 0,
+          "predicted_positive_count": 2,
+          "false_merge_rate": 0.0,
+          "record_count": 7,
+          "auto_link_count": 2,
+          "human_review_count": 0,
+          "no_link_count": 5,
+          "human_review_rate": 0.0,
+          "automatic_decision_rate": 1.0,
+          "human_review_same_event_count": 0,
+          "human_review_different_event_count": 0
+        },
+        "road_obstruction": {
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "confusion_matrix": [
+            [
+              3,
+              0
+            ],
+            [
+              0,
+              3
+            ]
+          ],
+          "true_positive": 3,
+          "false_positive": 0,
+          "true_negative": 3,
+          "false_negative": 0,
+          "predicted_positive_count": 3,
+          "false_merge_rate": 0.0,
+          "record_count": 6,
+          "auto_link_count": 3,
+          "human_review_count": 0,
+          "no_link_count": 3,
+          "human_review_rate": 0.0,
+          "automatic_decision_rate": 1.0,
+          "human_review_same_event_count": 0,
+          "human_review_different_event_count": 0
+        },
+        "unknown": {
+          "accuracy": 0.45454545454545453,
+          "precision": 0.5,
+          "recall": 0.5,
+          "f1": 0.5,
+          "confusion_matrix": [
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              3
+            ]
+          ],
+          "true_positive": 3,
+          "false_positive": 3,
+          "true_negative": 2,
+          "false_negative": 3,
+          "predicted_positive_count": 6,
+          "false_merge_rate": 0.5,
+          "record_count": 11,
+          "auto_link_count": 6,
+          "human_review_count": 0,
+          "no_link_count": 5,
+          "human_review_rate": 0.0,
+          "automatic_decision_rate": 1.0,
+          "human_review_same_event_count": 0,
+          "human_review_different_event_count": 0
+        }
+      }
+    }
+  },
+  "selected_model": "hybrid_semantic",
+  "highest_f1_model_for_reference": "distance_only"
+}

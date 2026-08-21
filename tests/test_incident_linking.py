@@ -66,11 +66,59 @@ def test_calculate_link_score_records_explainable_components():
         time_window_seconds=3600,
         semantic_similarity=0.8
     )
-    assert link_score == pytest.approx(0.685)
+    assert link_score == pytest.approx(0.65)
     assert link_reason['spatial_score'] == 0.7
     assert link_reason['temporal_score'] == 0.5
     assert link_reason['semantic_similarity'] == 0.8
-    assert link_reason['threshold'] == 0.55
+    assert link_reason['threshold'] == 0.7
+    assert link_reason['review_threshold'] == 0.65
+    assert link_reason['decision'] == 'human_review'
+    assert link_reason['config_version'] == 'v1'
+
+def test_link_score_decision_boundaries():
+    service = IncidentLinkingService(FakeIncidentRepository([]), FakeClusterRepository())
+    auto_link_score, auto_link_reason = service.calculate_link_score(
+        distance_meters=30,
+        time_difference_seconds=30,
+        radius_meters=100,
+        time_window_seconds=100,
+        semantic_similarity=0.70
+    )
+    review_score, review_reason = service.calculate_link_score(
+        distance_meters=35,
+        time_difference_seconds=35,
+        radius_meters=100,
+        time_window_seconds=100,
+        semantic_similarity=0.65
+    )
+    no_link_score, no_link_reason = service.calculate_link_score(
+        distance_meters=36,
+        time_difference_seconds=36,
+        radius_meters=100,
+        time_window_seconds=100,
+        semantic_similarity=0.64
+    )
+    assert auto_link_score == pytest.approx(0.70)
+    assert auto_link_reason['decision'] == 'auto_link'
+    assert review_score == pytest.approx(0.65)
+    assert review_reason['decision'] == 'human_review'
+    assert no_link_score == pytest.approx(0.64)
+    assert no_link_reason['decision'] == 'no_link'
+
+def test_semantic_similarity_missing():
+    service = IncidentLinkingService(FakeIncidentRepository([]), FakeClusterRepository())
+    link_score, link_reason = service.calculate_link_score(
+        distance_meters=36,
+        time_difference_seconds=36,
+        radius_meters=100,
+        time_window_seconds=100,
+        semantic_similarity=None
+    )
+    assert link_score == pytest.approx(0.64)
+    assert link_reason['spatial_weight'] == pytest.approx(0.6 / 0.9)
+    assert link_reason['temporal_weight'] == pytest.approx(0.3 / 0.9)
+    assert link_reason['semantic_similarity'] is None
+    assert link_reason['decision'] == 'no_link'
 
 @pytest.mark.asyncio
 async def test_link_incident_creates_cluster_when_no_candidate_qualifies():
@@ -78,10 +126,32 @@ async def test_link_incident_creates_cluster_when_no_candidate_qualifies():
     service = IncidentLinkingService(FakeIncidentRepository([]), cluster_repository)
     incident = create_incident(1, 'link-new-cluster')
     cluster = await service.link_incident(incident)
+    anchor_reason = cluster_repository.member_values[0]['link_reason']
     assert cluster.id == 1
     assert cluster.report_count == 1
     assert cluster_repository.member_values[0]['incident_id'] == incident.id
     assert cluster_repository.member_values[0]['link_score'] == 1.0
+    assert anchor_reason['reason'] == 'cluster_anchor'
+    assert anchor_reason['auto_link_threshold'] == 0.70
+    assert anchor_reason['review_threshold'] == 0.65
+    assert anchor_reason['config_version'] == 'v1'
+
+@pytest.mark.asyncio
+async def test_link_incident_creates_new_cluster_when_candidate_score_is_below_review_threshold():
+    candidate = create_incident(1, 'no-link-candidate')
+    incident = create_incident(2, 'no-link-new', datetime(2026, 8, 12, 11, 0, tzinfo=timezone.utc))
+    incident_repository = FakeIncidentRepository([(candidate, 250.0, 0.1)])
+    cluster_repository = FakeClusterRepository()
+    service = IncidentLinkingService(incident_repository, cluster_repository)
+    candidate_cluster = await service.create_new_cluster(candidate)
+    incident_cluster = await service.link_incident(incident)
+    assert incident_cluster.id != candidate_cluster.id
+    assert candidate_cluster.report_count == 1
+    assert incident_cluster.report_count == 1
+    assert cluster_repository.memberships[candidate.id].cluster_id == candidate_cluster.id
+    assert cluster_repository.memberships[incident.id].cluster_id == incident_cluster.id
+    assert cluster_repository.member_values[-1]['link_reason']['reason'] == 'cluster_anchor'
+    assert cluster_repository.member_values[-1]['link_reason']['config_version'] == 'v1'
 
 @pytest.mark.asyncio
 async def test_link_incident_joins_best_matching_candidate_cluster():
@@ -92,9 +162,39 @@ async def test_link_incident_joins_best_matching_candidate_cluster():
     service = IncidentLinkingService(incident_repository, cluster_repository)
     candidate_cluster = await service.create_new_cluster(candidate)
     cluster = await service.link_incident(incident)
+    link_reason = cluster_repository.member_values[-1]['link_reason']
     assert cluster.id == candidate_cluster.id
     assert cluster.report_count == 2
     assert cluster_repository.member_values[-1]['incident_id'] == incident.id
-    assert cluster_repository.member_values[-1]['link_score'] >= 0.55
+    assert cluster_repository.member_values[-1]['link_score'] >= 0.7
     assert incident_repository.search_values['category'] == 'flooding'
     assert incident_repository.search_values['exclude_incident_id'] == incident.id
+    assert link_reason['decision'] == 'auto_link'
+    assert link_reason['auto_link_threshold'] == 0.70
+    assert link_reason['review_threshold'] == 0.65
+    assert link_reason['config_version'] == 'v1'
+
+@pytest.mark.asyncio
+async def test_link_incident_keeps_ambiguous_candidate_in_separate_cluster_for_review():
+    candidate = create_incident(1, 'review-candidate')
+    incident = create_incident(2, 'review-new', datetime(2026, 8, 11, 20, 24, tzinfo=timezone.utc))
+    incident_repository = FakeIncidentRepository([(candidate, 90.0, 0.6)])
+    cluster_repository = FakeClusterRepository()
+    service = IncidentLinkingService(incident_repository, cluster_repository)
+    candidate_cluster = await service.create_new_cluster(candidate)
+    cluster = await service.link_incident(incident)
+    review_reason = cluster_repository.member_values[-1]['link_reason']
+    candidate_reason = review_reason['candidate_link_reason']
+    assert cluster.id != candidate_cluster.id
+    assert cluster.report_count == 1
+    assert cluster_repository.member_values[-1]['link_reason']['reason'] == 'human_review'
+    assert cluster_repository.member_values[-1]['link_reason']['candidate_incident_id'] == candidate.id
+    assert cluster_repository.member_values[-1]['link_reason']['candidate_link_reason']['decision'] == 'human_review'
+    assert review_reason['reason'] == 'human_review'
+    assert review_reason['candidate_incident_id'] == candidate.id
+    assert review_reason['candidate_link_score'] == pytest.approx(0.675)
+    assert review_reason['config_version'] == 'v1'
+    assert candidate_reason['decision'] == 'human_review'
+    assert candidate_reason['auto_link_threshold'] == 0.70
+    assert candidate_reason['review_threshold'] == 0.65
+    assert candidate_reason['config_version'] == 'v1'
